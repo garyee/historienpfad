@@ -1,29 +1,38 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule, ErrorHandler } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { StatusBar } from '@ionic-native/status-bar';
+
 import { MyApp } from './app.component';
+import { HomePage } from '../pages/home/home';
+import { ComponentsModule } from '../components/components.module';
 
 import { HelloIonicPage } from '../pages/hello-ionic/hello-ionic';
 import { ItemDetailsPage } from '../pages/item-details/item-details';
 import { ListPage } from '../pages/list/list';
 
-import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
+//import { Geolocation } from '@ionic-native/geolocation';
+
 
 @NgModule({
   declarations: [
     MyApp,
+    HomePage,
     HelloIonicPage,
-    ItemDetailsPage,
-    ListPage
+    ListPage,
+    ItemDetailsPage
+
   ],
   imports: [
     BrowserModule,
+    ComponentsModule,
     IonicModule.forRoot(MyApp),
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
+    HomePage,
     HelloIonicPage,
     ItemDetailsPage,
     ListPage
@@ -31,6 +40,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   providers: [
     StatusBar,
     SplashScreen,
+    //Geolocation,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
