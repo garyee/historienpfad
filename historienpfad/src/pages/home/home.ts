@@ -16,7 +16,10 @@ export class HomePage {
   testMarker(){
 
     let center = this.mapComponent.map.getCenter();
-    this.mapComponent.addMarker(center.lat(), center.lng());
+    this.mapComponent.addMarker(
+      this.mapComponent.markers[this.mapComponent.getMarkercount()],
+      center.lat(),
+      center.lng(),"marker");
 
   }
 

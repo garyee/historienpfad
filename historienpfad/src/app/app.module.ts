@@ -11,6 +11,7 @@ import { ComponentsModule } from '../components/components.module';
 import { HelloIonicPage } from '../pages/hello-ionic/hello-ionic';
 import { ItemDetailsPage } from '../pages/item-details/item-details';
 import { ListPage } from '../pages/list/list';
+import {TabsPage} from "../pages/tabs/tabs";
 
 //import { Geolocation } from '@ionic-native/geolocation';
 
@@ -21,8 +22,8 @@ import { ListPage } from '../pages/list/list';
     HomePage,
     HelloIonicPage,
     ListPage,
-    ItemDetailsPage
-
+    ItemDetailsPage,
+    TabsPage
   ],
   imports: [
     BrowserModule,
@@ -35,7 +36,8 @@ import { ListPage } from '../pages/list/list';
     HomePage,
     HelloIonicPage,
     ItemDetailsPage,
-    ListPage
+    ListPage,
+    TabsPage
   ],
   providers: [
     StatusBar,

@@ -3,17 +3,14 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Home Page</ion-title>
+    <ion-title>Karte</ion-title>
   </ion-navbar>
 </ion-header>
 
 
 <ion-content padding>
-
-  <h3>Heading</h3>
-
   <google-map apiKey="AIzaSyDO_xmwXCG-vtuhmIimC06cK_QvIbnfYNU"></google-map>
 </ion-content>
 <ion-footer>
-  <button ion-button color="light" full (click)="testMarker()">Test Marker</button>
+  <button ion-button color="light" (click)="testMarker()">Test Marker</button>
 </ion-footer>
