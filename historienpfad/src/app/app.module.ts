@@ -10,6 +10,15 @@ import { ListPage } from '../pages/list/list';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
+// Import the AF2 Module
+import { AngularFireModule } from 'angularfire2';
+import { firebaseConfig } from '../../firebase.credentials';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
+// import {PointListService} from "../../services/database/point-list.service";
+import { NoteListService } from '../../services/database/note-list.service';
+
+
+
 @NgModule({
   declarations: [
     MyApp,
@@ -20,6 +29,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   imports: [
     BrowserModule,
     IonicModule.forRoot(MyApp),
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireDatabaseModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -31,7 +42,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
-  ]
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    NoteListService
+    ]
 })
 export class AppModule {}
