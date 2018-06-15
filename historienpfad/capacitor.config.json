@@ -1,0 +1,6 @@
+{
+  "appId": "com.informatik.historienpfad",
+  "appName": "historienpfad",
+  "bundledWebRuntime": false,
+  "webDir": "www"
+}
