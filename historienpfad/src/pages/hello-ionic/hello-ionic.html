@@ -1,6 +1,9 @@
 <ion-header>
-  <ion-navbar color="primary">
-    <ion-title>Historienpfad-App</ion-title>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Hello Ionic</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -10,11 +13,13 @@
   <h3>Welcome to your first Ionic app!</h3>
 
   <p>
-    <button ion-button color="primary" (click)="addRandomPoint()">Add Point</button>
+    This starter project is our way of helping you get a functional app running in record time.
   </p>
-  <ion-list>
-  <ion-item *ngFor="let item of (noteList | async)">
-    {{item.content}}
-  </ion-item>
-  </ion-list>
+  <p>
+    Follow along on the tutorial section of the Ionic docs!
+  </p>
+  <p>
+    <button ion-button color="primary" menuToggle>Toggle Menu</button>
+  </p>
+
 </ion-content>

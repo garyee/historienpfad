@@ -14,8 +14,6 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { AngularFireModule } from 'angularfire2';
 import { firebaseConfig } from '../../firebase.credentials';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
-// import {PointListService} from "../../services/database/point-list.service";
-import { NoteListService } from '../../services/database/note-list.service';
 
 
 
@@ -43,7 +41,6 @@ import { NoteListService } from '../../services/database/note-list.service';
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    NoteListService
     ]
 })
 export class AppModule {}
