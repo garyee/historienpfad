@@ -16,6 +16,13 @@ import {TabsPage} from "../pages/tabs/tabs";
 //import { Geolocation } from '@ionic-native/geolocation';
 
 
+// Import the AF2 Module
+import { AngularFireModule } from 'angularfire2';
+import { firebaseConfig } from '../../firebase.credentials';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
+
+
+
 @NgModule({
   declarations: [
     MyApp,
@@ -29,6 +36,8 @@ import {TabsPage} from "../pages/tabs/tabs";
     BrowserModule,
     ComponentsModule,
     IonicModule.forRoot(MyApp),
+    AngularFireModule.initializeApp(firebaseConfig),
+    AngularFireDatabaseModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -42,7 +51,6 @@ import {TabsPage} from "../pages/tabs/tabs";
   providers: [
     StatusBar,
     SplashScreen,
-    //Geolocation,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
