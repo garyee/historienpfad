@@ -8,7 +8,8 @@ import { ListPage } from '../pages/list/list';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import {HomePage} from "../pages/home/home";
-import {TabsPage} from "../pages/tabs/tabs";
+import {LoginPage} from "../pages/login/login";
+import {AuthService} from "../../services/auth.service";
 
 
 @Component({
@@ -18,14 +19,15 @@ export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
   // make HelloIonicPage the root (or first) page
-  rootPage = TabsPage;
+  rootPage = LoginPage;
   pages: Array<{title: string, component: any}>;
 
   constructor(
     public platform: Platform,
     public menu: MenuController,
     public statusBar: StatusBar,
-    public splashScreen: SplashScreen
+    public splashScreen: SplashScreen,
+    private auth: AuthService
   ) {
     this.initializeApp();
 
@@ -46,12 +48,42 @@ export class MyApp {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
+
+    this.auth.afAuth.authState
+      .subscribe(
+        user => {
+          if (user) {
+            this.nav.setRoot(HomePage);
+          } else {
+            this.rootPage = LoginPage;
+          }
+        },
+        () => {
+          this.rootPage = LoginPage;
+        }
+      );
   }
 
   openPage(page) {
     // close the menu when clicking a link from the menu
     this.menu.close();
     // navigate to the new page if it is not the current page
-    this.nav.setRoot(page.component);
+    if(this.auth.authenticated) {
+      this.nav.setRoot(page.component);
+    }else{
+      this.nav.setRoot(LoginPage);
+    }
+  }
+
+  login() {
+    this.menu.close();
+    this.auth.signOut();
+    this.nav.setRoot(LoginPage);
+  }
+
+  logout() {
+    this.menu.close();
+    this.auth.signOut();
+    this.nav.setRoot(LoginPage);
   }
 }

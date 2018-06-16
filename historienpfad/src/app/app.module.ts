@@ -15,16 +15,17 @@ import {TabsPage} from "../pages/tabs/tabs";
 
 //import { Geolocation } from '@ionic-native/geolocation';
 
-
 // Import the AF2 Module
 import { AngularFireModule } from 'angularfire2';
 import { firebaseConfig } from '../../firebase.credentials';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
-
-
+import { AngularFireAuth } from 'angularfire2/auth';
+import {AuthService} from "../../services/auth.service";
+import {LoginPage} from "../pages/login/login";
 
 @NgModule({
   declarations: [
+    LoginPage,
     MyApp,
     HomePage,
     HelloIonicPage,
@@ -46,12 +47,15 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
     HelloIonicPage,
     ItemDetailsPage,
     ListPage,
-    TabsPage
+    TabsPage,
+    LoginPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    AuthService,
+    AngularFireAuth
   ]
 })
 export class AppModule {}
