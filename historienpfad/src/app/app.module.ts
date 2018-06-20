@@ -22,6 +22,8 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import {AuthService} from "../../services/auth.service";
 import {LoginPage} from "../pages/login/login";
+import {GeoService} from "../../services/database/geo.service";
+import {PointListService} from "../../services/database/point-list.service";
 
 @NgModule({
   declarations: [
@@ -55,6 +57,8 @@ import {LoginPage} from "../pages/login/login";
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthService,
+    GeoService,
+    PointListService,
     AngularFireAuth
   ]
 })
