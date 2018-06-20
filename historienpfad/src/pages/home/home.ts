@@ -53,7 +53,7 @@ export class HomePage {
     this.geo.getLocations(100,[center.lat(),center.lng()],(key, location, distance)=>{
       this.point.getPoint(key,(res)=>{
 
-        var marker = new google.maps.Marker({
+        new google.maps.Marker({
           position: {lat: location[0], lng: location[1]},
           map: this.mapComponent.map,
           title: res.email+' '+ moment(res.ts).format('YYYY-MM-DD h:mm:ss')

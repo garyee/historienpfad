@@ -30,7 +30,7 @@ export class GeoService {
   /// Queries database for nearby locations
   /// Maps results to the hits BehaviorSubject
   getLocations(radius: number, coords: Array<number>, cb) {
-    var onReadyRegistration =this.geoFire.query({
+    this.geoFire.query({
       center: coords,
       radius: radius
     }).on("key_entered", cb);
