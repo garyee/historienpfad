@@ -186,18 +186,24 @@ export class GoogleMapComponent {
   }
 
   public addMarker(markerid: number, lat: number, lng: number, icon:  string="marker"): void {
-
     let latLng = new google.maps.LatLng(lat, lng);
-    switch (icon){
-      case "me": icon = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"; break;
-      case "marker": icon = "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; break;
-
+    if(this.markers[markerid]!=undefined){
+      this.markers[markerid]="";
     }
-
+    if(this.me!=undefined && icon=="me"){
+      this.me.setPosition(latLng);
+      return;
+    }
+    switch (icon){
+      case "me":
+        icon = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"; break;
+      case "marker":
+        icon = "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; break;
+    }
     this.markers[markerid] = new google.maps.Marker({
       map: this.map,
       icon: icon,
-      animation: google.maps.Animation.DROP,
+      animation: (icon=="marker")?google.maps.Animation.DROP:google.maps.Animation.BOUNCE,
       position: latLng
     });
 

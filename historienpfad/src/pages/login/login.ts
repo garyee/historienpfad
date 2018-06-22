@@ -3,6 +3,7 @@ import { IonicPage, MenuController, NavController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HomePage } from '../home/home';
 import { AuthService } from '../../../services/auth.service';
+import {TabsPage} from "../tabs/tabs";
 
 /**
  * Generated class for the LoginPage page.
@@ -31,6 +32,10 @@ export class LoginPage {
       password: ['', Validators.compose([Validators.required, Validators.minLength(6)])]
     });
     this.menu.enable(false);
+    //TEMPORARiLY
+    //this.navCtrl.setRoot(TabsPage);
+    //return;
+
   }
 
   login() {

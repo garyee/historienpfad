@@ -32,6 +32,7 @@ export class HomePage {
     dummyPoints.forEach((val, idx) => {
       let name = `dummy-location-${idx}`
       this.geo.setLocation(name, val)
+      this.mapComponent.addMarker(idx, dummyPoints[idx][0], dummyPoints[idx][1],"marker");
     })
   }
 
