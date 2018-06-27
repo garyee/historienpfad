@@ -155,21 +155,22 @@ export class GoogleMapComponent {
       Geolocation.getCurrentPosition().then((position) => {
         this.watchPosition();
         console.log(position);
+        if(position!=null) {
+          let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+          let mapOptions = {
+            center: latLng,
+            zoom: 15
+          };
 
-        let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        let mapOptions = {
-          center: latLng,
-          zoom: 15
-        };
+          this.map = new google.maps.Map(this.element.nativeElement, mapOptions);
+          resolve(true);
 
-        this.map = new google.maps.Map(this.element.nativeElement, mapOptions);
-        resolve(true);
-
-        this.addMarker(-1,position.coords.latitude, position.coords.longitude,"me");
+          this.addMarker(-1, position.coords.latitude, position.coords.longitude, "me");
+        }else{
+          console.log("No Position");
+        }
       }, (err) => {
-
         reject('Could not initialise map');
-
       });
     });
   }
@@ -179,20 +180,29 @@ export class GoogleMapComponent {
   watchPosition() {
     //const wait =
     Geolocation.watchPosition({}, (position, err) => {
-      this.map.setCenter(position.coords.latitude,position.coords.longitude);
-      this.addMarker(-1,position.coords.latitude,position.coords.longitude,"me");
-
+      if(this.map!=undefined) {
+        console.log(err);
+        if (position != undefined) {
+          let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+          this.map.setCenter(latLng);
+          this.addMarker(-1, position.coords.latitude, position.coords.longitude, "me");
+        }
+      }
     });
   }
 
   public addMarker(markerid: number, lat: number, lng: number, icon:  string="marker"): void {
     let latLng = new google.maps.LatLng(lat, lng);
+    console.log(this.markers[markerid]);
     if(this.markers[markerid]!=undefined){
-      this.markers[markerid]="";
+      this.markers[markerid].setPosition(latLng);
+      return;
+      //this.markers[markerid].remove();
     }
     if(this.me!=undefined && icon=="me"){
       this.me.setPosition(latLng);
       return;
+      //this.me.remove();
     }
     switch (icon){
       case "me":
@@ -200,12 +210,17 @@ export class GoogleMapComponent {
       case "marker":
         icon = "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; break;
     }
-    this.markers[markerid] = new google.maps.Marker({
+    let marker = new google.maps.Marker({
       map: this.map,
       icon: icon,
       animation: (icon=="marker")?google.maps.Animation.DROP:google.maps.Animation.BOUNCE,
       position: latLng
     });
+    if(icon!="me"){
+      this.markers[markerid]=marker;
+    }else{
+      this.me=marker;
+    }
 
   }
 
