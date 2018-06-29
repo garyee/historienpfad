@@ -12,11 +12,13 @@ const { Geolocation, Network } = Plugins;
 export class GoogleMapComponent {
 
   @Input('apiKey') apiKey: string;
-
+  public lat: number;
+  public lng: number;
   public map: any;
   public me: any;
   public markers: any[] = [];
   private mapsLoaded: boolean = false;
+  private watchdog: any;
   private networkHandler = null;
 
   constructor(private renderer: Renderer2, private element: ElementRef, @Inject(DOCUMENT) private _document){
@@ -165,7 +167,7 @@ export class GoogleMapComponent {
           this.map = new google.maps.Map(this.element.nativeElement, mapOptions);
           resolve(true);
 
-          this.addMarker(-1, position.coords.latitude, position.coords.longitude, "me");
+          this.setMe(position.coords.latitude, position.coords.longitude);
         }else{
           console.log("No Position");
         }
@@ -174,54 +176,81 @@ export class GoogleMapComponent {
       });
     });
   }
-  public getMarkercount(){
-    return this.markers.length;
-  }
-  watchPosition() {
-    //const wait =
-    Geolocation.watchPosition({}, (position, err) => {
-      if(this.map!=undefined) {
-        console.log(err);
-        if (position != undefined) {
-          let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-          this.map.setCenter(latLng);
-          this.addMarker(-1, position.coords.latitude, position.coords.longitude, "me");
-        }
-      }
-    });
-  }
-
-  public addMarker(markerid: number, lat: number, lng: number, icon:  string="marker"): void {
+  /*
+  Marker management
+   */
+  public delMarker(markerid: number): boolean{
+    if(this.markers[markerid]!=undefined) {
+      this.markers[markerid].remove();
+      delete(this.markers[markerid]);
+      return true;
+    }
+    return false;
+  };
+  public addMarker(markerid: number, lat: number, lng: number, title: string): void {
     let latLng = new google.maps.LatLng(lat, lng);
-    console.log(this.markers[markerid]);
     if(this.markers[markerid]!=undefined){
       this.markers[markerid].setPosition(latLng);
       return;
-      //this.markers[markerid].remove();
-    }
-    if(this.me!=undefined && icon=="me"){
-      this.me.setPosition(latLng);
-      return;
-      //this.me.remove();
-    }
-    switch (icon){
-      case "me":
-        icon = "https://maps.google.com/mapfiles/ms/icons/blue-dot.png"; break;
-      case "marker":
-        icon = "https://maps.google.com/mapfiles/ms/icons/red-dot.png"; break;
     }
     let marker = new google.maps.Marker({
       map: this.map,
-      icon: icon,
-      animation: (icon=="marker")?google.maps.Animation.DROP:google.maps.Animation.BOUNCE,
-      position: latLng
+      icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+      animation: google.maps.Animation.DROP,
+      position: latLng,
+      draggable: true,
+      title: title,
     });
-    if(icon!="me"){
-      this.markers[markerid]=marker;
-    }else{
-      this.me=marker;
-    }
-
+    this.markers[markerid]=marker;
   }
 
+  public getMarkercount(){
+    return this.markers.length;
+  }
+
+  public setMe(lat: number, lng: number): void {
+    let latLng = new google.maps.LatLng(lat, lng);
+    if(this.me!=undefined){
+      this.me.setPosition(latLng);
+      return;
+    }
+    let marker = new google.maps.Marker({
+      map: this.map,
+      icon: "https://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+      animation: 0,
+      position: latLng,
+    });
+    this.me=marker;
+  }
+  public getPosition(): Promise<{lat:number,lng:number}>{
+      return Geolocation.getCurrentPosition().then((position) => {
+        if(position!=null) {
+          this.lat=position.coords.latitude;
+          this.lng=position.coords.longitude;
+          return {lat:this.lat, lng:this.lng};
+        }
+      }, (err) => {
+        this.lat=-1;
+        this.lng=-1;
+        return {lat:this.lat, lng:this.lng};
+      });
+  }
+  /*
+   Position Callback
+   */
+  private watchPosition() {
+    this.watchdog = Geolocation.watchPosition({}, (position, err) => {
+      if(this.map!=undefined) {
+        if (position != undefined) {
+          let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+          this.map.setCenter(latLng);
+          this.setMe(position.coords.latitude, position.coords.longitude);
+        }else{
+          console.log("Position Error")
+        }
+      }else{
+        console.log("Map not initialized");
+      }
+    });
+  }
 }

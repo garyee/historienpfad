@@ -10,6 +10,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import {HomePage} from "../pages/home/home";
 import {LoginPage} from "../pages/login/login";
 import {AuthService} from "../../services/auth.service";
+import {TabsPage} from "../pages/tabs/tabs";
 
 
 @Component({
@@ -53,7 +54,7 @@ export class MyApp {
       .subscribe(
         user => {
           if (user) {
-            this.nav.setRoot(HomePage);
+            this.nav.setRoot(TabsPage);
           } else {
             this.rootPage = LoginPage;
           }

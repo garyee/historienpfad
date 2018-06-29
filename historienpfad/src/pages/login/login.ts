@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { HomePage } from '../home/home';
 import { AuthService } from '../../../services/auth.service';
 import {TabsPage} from "../tabs/tabs";
+import {HelloIonicPage} from "../hello-ionic/hello-ionic";
 
 /**
  * Generated class for the LoginPage page.
@@ -51,7 +52,7 @@ export class LoginPage {
     };
     this.auth.signInWithEmail(credentials)
       .then(
-        () => this.navCtrl.setRoot(HomePage),
+        () => this.navCtrl.setRoot(HelloIonicPage),
         error => this.loginError = error.message
       );
   }
@@ -64,7 +65,7 @@ export class LoginPage {
   loginWithGoogle() {
     this.auth.signInWithGoogle()
       .then(
-        () => this.navCtrl.setRoot(HomePage),
+        () => this.navCtrl.setRoot(HelloIonicPage),
         error => console.log(error.message)
       );
   }

@@ -46,19 +46,17 @@ export class HomePage {
 
     const key=new Date().getTime()+'';
     this.geo.setLocation(key, [center.lat(),center.lng()]);
-    this.point.addPoint(key,{email:this.auth.getEmail(),ts:new Date().getTime()});
+    this.point.addPoint(key,{
+          name:"Test"+Math.round(Math.random()*10),
+          email:this.auth.getEmail(),
+          ts:new Date().getTime()});
   }
 
   getcoords(){
     let center = this.mapComponent.map.getCenter();
     this.geo.getLocations(100,[center.lat(),center.lng()],(key, location, distance)=>{
       this.point.getPoint(key,(res)=>{
-
-        new google.maps.Marker({
-          position: {lat: location[0], lng: location[1]},
-          map: this.mapComponent.map,
-          title: res.email+' '+ moment(res.ts).format('YYYY-MM-DD h:mm:ss')
-        });
+        this.mapComponent.addMarker(this.mapComponent.getMarkercount(),location[0],location[1],(res.email+' '+ moment(res.ts).format('YYYY-MM-DD h:mm:ss')));
       });
     });
   }

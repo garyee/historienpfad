@@ -21,9 +21,11 @@ import { firebaseConfig } from '../../firebase.credentials';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import {AuthService} from "../../services/auth.service";
-import {LoginPage} from "../pages/login/login";
 import {GeoService} from "../../services/database/geo.service";
 import {PointListService} from "../../services/database/point-list.service";
+import {PositionService} from "../../services/position.service";
+import {LoginPage} from "../pages/login/login";
+import { PositionServiceProvider } from '../providers/position-service/position-service';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,9 @@ import {PointListService} from "../../services/database/point-list.service";
     AuthService,
     GeoService,
     PointListService,
-    AngularFireAuth
+    AngularFireAuth,
+    PositionService,
+    PositionServiceProvider
   ]
 })
 export class AppModule {}
