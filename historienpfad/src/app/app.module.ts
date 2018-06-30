@@ -26,6 +26,7 @@ import {PointListService} from "../../services/database/point-list.service";
 import {PositionService} from "../../services/position.service";
 import {LoginPage} from "../pages/login/login";
 import { PositionServiceProvider } from '../providers/position-service/position-service';
+import {LogoutPage} from "../pages/logout/logout";
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { PositionServiceProvider } from '../providers/position-service/position-
     HelloIonicPage,
     ListPage,
     ItemDetailsPage,
-    TabsPage
+    TabsPage,
+    LogoutPage
   ],
   imports: [
     BrowserModule,
@@ -52,7 +54,8 @@ import { PositionServiceProvider } from '../providers/position-service/position-
     ItemDetailsPage,
     ListPage,
     TabsPage,
-    LoginPage
+    LoginPage,
+    LogoutPage
   ],
   providers: [
     StatusBar,

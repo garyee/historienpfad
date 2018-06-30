@@ -11,4 +11,7 @@ export class TabsPage {
   HomePage= HomePage;
   ItemDetailsPage= ItemDetailsPage;
   ListPage= ListPage;
+  public myFunction(){
+    console.log("Test");
+  };
 }

@@ -169,7 +169,17 @@ export class GoogleMapComponent {
 
           this.setMe(position.coords.latitude, position.coords.longitude);
         }else{
-          console.log("No Position");
+          let latLng = new google.maps.LatLng(50.8389047,12.927764);
+          let mapOptions = {
+            center: latLng,
+            zoom: 15
+          };
+
+          this.map = new google.maps.Map(this.element.nativeElement, mapOptions);
+          resolve(true);
+
+          this.setMe(position.coords.latitude, position.coords.longitude);
+          console.log("Not your Position");
         }
       }, (err) => {
         reject('Could not initialise map');
@@ -198,7 +208,7 @@ export class GoogleMapComponent {
       icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
       animation: google.maps.Animation.DROP,
       position: latLng,
-      draggable: true,
+      //draggable: true,
       title: title,
     });
     this.markers[markerid]=marker;
@@ -243,7 +253,7 @@ export class GoogleMapComponent {
       if(this.map!=undefined) {
         if (position != undefined) {
           let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-          this.map.setCenter(latLng);
+          //this.map.setCenter(latLng);
           this.setMe(position.coords.latitude, position.coords.longitude);
         }else{
           console.log("Position Error")

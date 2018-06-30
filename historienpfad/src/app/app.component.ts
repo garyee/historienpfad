@@ -11,6 +11,7 @@ import {HomePage} from "../pages/home/home";
 import {LoginPage} from "../pages/login/login";
 import {AuthService} from "../../services/auth.service";
 import {TabsPage} from "../pages/tabs/tabs";
+import {LogoutPage} from "../pages/logout/logout";
 
 
 @Component({
@@ -38,7 +39,7 @@ export class MyApp {
       { title: 'Spielen', component: HomePage },
       { title: 'Pfad auswählen', component: ListPage },
       { title: 'Pfad bearbeiten', component: HomePage },
-      { title: 'Logout', component: HelloIonicPage }
+      { title: 'Logout', component: LogoutPage }
     ];
   }
 
@@ -55,12 +56,16 @@ export class MyApp {
         user => {
           if (user) {
             this.nav.setRoot(TabsPage);
+            this.menu.enable(true);
+
           } else {
             this.rootPage = LoginPage;
+            this.menu.enable(false);
           }
         },
         () => {
           this.rootPage = LoginPage;
+          this.menu.enable(false);
         }
       );
   }

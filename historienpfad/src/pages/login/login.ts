@@ -32,7 +32,11 @@ export class LoginPage {
       email: ['', Validators.compose([Validators.required, Validators.email])],
       password: ['', Validators.compose([Validators.required, Validators.minLength(6)])]
     });
-    this.menu.enable(false);
+    if(!this.auth.authenticated){
+      this.menu.enable(false);
+      this.navCtrl.setRoot(LoginPage);
+      return
+    }
     //TEMPORARiLY
     //this.navCtrl.setRoot(TabsPage);
     //return;
@@ -52,7 +56,10 @@ export class LoginPage {
     };
     this.auth.signInWithEmail(credentials)
       .then(
-        () => this.navCtrl.setRoot(HelloIonicPage),
+        () => {
+          this.menu.enable(true);
+          this.navCtrl.setRoot(HelloIonicPage);
+        },
         error => this.loginError = error.message
       );
   }
@@ -65,7 +72,10 @@ export class LoginPage {
   loginWithGoogle() {
     this.auth.signInWithGoogle()
       .then(
-        () => this.navCtrl.setRoot(HelloIonicPage),
+        () => {
+          this.menu.enable(true);
+          this.navCtrl.setRoot(HelloIonicPage);
+          },
         error => console.log(error.message)
       );
   }

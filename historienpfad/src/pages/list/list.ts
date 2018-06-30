@@ -37,7 +37,29 @@ export class ListPage {
     console.log(pos.state);
     this.geo.getLocations(100, [pos.lat, pos.lng], (key, location, distance) => {
       if(key!==undefined){
-        console.log(key);
+        this.point.getPoint(key, (res) => {
+          this.items.push({
+            id: key,
+            title: res.name + ':' + Math.round(distance*100)/100 + "km",
+            note: ('(' + moment(res.ts).format('YYYY-MM-DD h:mm:ss')+')'),
+            icon: 'contract'
+          });
+        });
+      }
+    });
+  }
+  ionSelected(){
+    //this.scrollArea.scrollToTop();
+    //this.refresh();
+    console.log("Selected");
+    this.items = [];
+    this.pos.retPosition();
+    for(let i=0; i<=1000; i=i+1){
+      if(this.pos.state!==true){}
+    }
+    console.log(this.pos.state);
+    this.geo.getLocations(100, [this.pos.lat, this.pos.lng], (key, location, distance) => {
+      if(key!==undefined){
         this.point.getPoint(key, (res) => {
           this.items.push({
             id: key,

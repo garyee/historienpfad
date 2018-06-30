@@ -17,26 +17,9 @@ export class HomePage {
   constructor(private geo: GeoService,
               private point: PointListService,
               private auth: AuthService) {
-    // this.setdummyPoints();
   }
 
-  setdummyPoints(){
-    let dummyPoints = [
-      [37.9, -122.1],
-      [38.7, -122.2],
-      [38.1, -122.3],
-      [38.3, -122.0],
-      [38.7, -122.1]
-    ]
-
-    dummyPoints.forEach((val, idx) => {
-      let name = `dummy-location-${idx}`
-      this.geo.setLocation(name, val)
-      this.mapComponent.addMarker(idx, dummyPoints[idx][0], dummyPoints[idx][1],"marker");
-    })
-  }
-
-  testMarker(){
+  public testMarker(){
 
     let center = this.mapComponent.map.getCenter();
     this.mapComponent.addMarker(
@@ -51,8 +34,14 @@ export class HomePage {
           email:this.auth.getEmail(),
           ts:new Date().getTime()});
   }
+  ionSelected() {
+    //this.scrollArea.scrollToTop();
+    //this.refresh();
+    console.log("Selected");
+    this.getcoords();
+  }
 
-  getcoords(){
+  public getcoords(){
     let center = this.mapComponent.map.getCenter();
     this.geo.getLocations(100,[center.lat(),center.lng()],(key, location, distance)=>{
       this.point.getPoint(key,(res)=>{
