@@ -12,11 +12,11 @@
     <ion-list inset>
 
       <ion-item>
-        <ion-input type="text" placeholder="Email" formControlName="email"></ion-input>
+        <ion-input type="text" placeholder="Email" formControlName="email" value="admin@admin.de"></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-input type="password" placeholder="Password" formControlName="password"></ion-input>
+        <ion-input type="password" placeholder="Password" formControlName="password" value="adminadmin"></ion-input>
       </ion-item>
 
     </ion-list>
@@ -37,11 +37,6 @@
         <button ion-button icon-left block clear (click)="loginWithGoogle()">
           <ion-icon name="logo-google"></ion-icon>
           Log in with Google
-        </button>
-
-        <button ion-button icon-left block clear (click)="signup()">
-          <ion-icon name="person-add"></ion-icon>
-          Sign up
         </button>
       </ion-list>
     </div>
