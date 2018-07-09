@@ -2,8 +2,12 @@ import {Component, Input, Renderer2, ElementRef, Inject} from '@angular/core';
 import { DOCUMENT } from '@angular/platform-browser';
 import { Plugins } from '@capacitor/core';
 import {} from '@types/googlemaps';
+import {GeoService} from "../../../services/database/geo.service";
+import {PointListService} from "../../../services/database/point-list.service";
 //import { GoogleMap, GoogleMapsEvent, GoogleMapsLatLng } from './googlemaps';
 const { Geolocation, Network } = Plugins;
+import moment from "moment";
+import {AuthService} from "../../../services/auth.service";
 
 @Component({
   selector: 'google-map',
@@ -21,13 +25,21 @@ export class GoogleMapComponent {
   private watchdog: any;
   private networkHandler = null;
 
-  constructor(private renderer: Renderer2, private element: ElementRef, @Inject(DOCUMENT) private _document){
+  constructor(
+    private renderer: Renderer2,
+    private element: ElementRef,
+    @Inject(DOCUMENT) private _document,
+    private geo: GeoService,
+    private point: PointListService,
+    private auth: AuthService,
+  ){
 
   }
 
   ngOnInit(){
 
     this.init().then((res) => {
+      this.retrievePaths();
       console.log("Google Maps ready.")
     }, (err) => {
       console.log(err);
@@ -86,7 +98,8 @@ export class GoogleMapComponent {
                   this.networkHandler.remove();
 
                   this.init().then((res) => {
-                    console.log("Google Maps ready.")
+                    console.log("Google Maps ready.");
+                    //this.retrievePaths();
                   }, (err) => {
                     console.log(err);
                   });
@@ -253,7 +266,7 @@ export class GoogleMapComponent {
       if(this.map!=undefined) {
         if (position != undefined) {
           let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-          //this.map.setCenter(latLng);
+          this.map.setCenter(latLng);
           this.setMe(position.coords.latitude, position.coords.longitude);
         }else{
           console.log("Position Error")
@@ -262,5 +275,28 @@ export class GoogleMapComponent {
         console.log("Map not initialized");
       }
     });
+  }
+
+  public retrievePaths(){
+    let center = this.map.getCenter();
+    this.geo.getLocations(100,[center.lat(),center.lng()],(key, location, distance)=>{
+      this.point.getPoint(key,(res)=>{
+        this.addMarker(this.getMarkercount(),location[0],location[1],(res.email+' '+ moment(res.ts).format('YYYY-MM-DD h:mm:ss')));
+      });
+    });
+  }
+  public setNewMarker(){
+    let center = this.map.getCenter();
+    this.addMarker(
+      this.markers[this.getMarkercount()],
+      center.lat(),
+      center.lng(),"marker");
+
+    const key=new Date().getTime()+'';
+    this.geo.setLocation(key, [center.lat(),center.lng()]);
+    this.point.addPoint(key,{
+          name:"Test"+Math.round(Math.random()*10),
+          email:this.auth.getEmail(),
+          ts:new Date().getTime()});
   }
 }
