@@ -3,7 +3,7 @@ import {Component, ViewChild} from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 
 import { ItemDetailsPage } from '../item-details/item-details';
-import {PointListService} from "../../../services/database/point-list.service";
+import {PointService} from "../../../services/database/point.service";
 import {GeoService} from "../../../services/database/geo.service";
 import {AuthService} from "../../../services/auth.service";
 import {GoogleMapComponent} from "../../components/google-map/google-map";
@@ -24,7 +24,7 @@ export class ListPage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private geo: GeoService,
-              private point: PointListService,
+              private point: PointService,
               private auth: AuthService,
               private pos: PositionService) {
     this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane', 'american-football', 'boat', 'bluetooth', 'build'];
@@ -34,7 +34,6 @@ export class ListPage {
     for(let i=0; i<=1000; i=i+1){
       if(pos.state!==true){}
     }
-    console.log(pos.state);
     this.geo.getLocations(100, [pos.lat, pos.lng], (key, location, distance) => {
       if(key!==undefined){
         this.point.getPoint(key, (res) => {
@@ -51,13 +50,11 @@ export class ListPage {
   ionSelected(){
     //this.scrollArea.scrollToTop();
     //this.refresh();
-    console.log("Selected");
     this.items = [];
     this.pos.retPosition();
     for(let i=0; i<=1000; i=i+1){
       if(this.pos.state!==true){}
     }
-    console.log(this.pos.state);
     this.geo.getLocations(100, [this.pos.lat, this.pos.lng], (key, location, distance) => {
       if(key!==undefined){
         this.point.getPoint(key, (res) => {
@@ -80,6 +77,6 @@ export class ListPage {
     let element = this.items[indexes.from];
     this.items.splice(indexes.from, 1);
     this.items.splice(indexes.to, 0, element);
-    //this.items = reorderArray(this.items, indexes);
+    //this.paths = reorderArray(this.paths, indexes);
   }
 }
