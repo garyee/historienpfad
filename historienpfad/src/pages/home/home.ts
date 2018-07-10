@@ -20,6 +20,7 @@ export class HomePage {
   ionSelected(){
     //this.scrollArea.scrollToTop();
     //this.refresh();
+    console.log(this.auth.getEmail());
     console.log("Selected");
   }
 

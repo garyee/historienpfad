@@ -13,7 +13,7 @@ import { ItemDetailsPage } from '../pages/item-details/item-details';
 import { ListPage } from '../pages/list/list';
 import {TabsPage} from "../pages/tabs/tabs";
 
-//import { Geolocation } from '@ionic-native/geolocation';
+import { Geolocation } from '@ionic-native/geolocation';
 
 // Import the AF2 Module
 import { AngularFireModule } from 'angularfire2';
@@ -66,7 +66,8 @@ import {LogoutPage} from "../pages/logout/logout";
     PointListService,
     AngularFireAuth,
     PositionService,
-    PositionServiceProvider
+    PositionServiceProvider,
+    Geolocation
   ]
 })
 export class AppModule {}

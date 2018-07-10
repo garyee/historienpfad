@@ -8,6 +8,7 @@ import {PointListService} from "../../../services/database/point-list.service";
 const { Geolocation, Network } = Plugins;
 import moment from "moment";
 import {AuthService} from "../../../services/auth.service";
+import {PositionService} from "../../../services/position.service";
 
 @Component({
   selector: 'google-map',
@@ -32,12 +33,12 @@ export class GoogleMapComponent {
     private geo: GeoService,
     private point: PointListService,
     private auth: AuthService,
+    private pos: PositionService
   ){
 
   }
 
   ngOnInit(){
-
     this.init().then((res) => {
       this.retrievePaths();
       console.log("Google Maps ready.")
@@ -48,23 +49,16 @@ export class GoogleMapComponent {
   }
 
   private init(): Promise<any> {
-
     return new Promise((resolve, reject) => {
-
       this.loadSDK().then((res) => {
-
         this.initMap().then((res) => {
           resolve(true);
         }, (err) => {
           reject(err);
         });
-
       }, (err) => {
-
         reject(err);
-
       });
-
     });
 
   }
@@ -166,36 +160,21 @@ export class GoogleMapComponent {
   private initMap(): Promise<any> {
 
     return new Promise((resolve, reject) => {
+      let mylocation = this.pos.getPosition();
+      console.log(mylocation);
+      let latLng = new google.maps.LatLng(mylocation.lat, mylocation.lng);
+      let mapOptions = {
+        center: latLng,
+        zoom: 15
+      };
+      this.map = new google.maps.Map(this.element.nativeElement, mapOptions);
+      resolve(true);
+      this.setMe(mylocation.lat, mylocation.lng);
+      this.pos.positionSubject.subscribe((data)=>{
+        console.log(data);
+        mylocation=this.pos.getPosition();
+        this.setMe(mylocation.lat, mylocation.lng);
 
-      Geolocation.getCurrentPosition().then((position) => {
-        this.watchPosition();
-        console.log(position);
-        if(position!=null) {
-          let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-          let mapOptions = {
-            center: latLng,
-            zoom: 15
-          };
-
-          this.map = new google.maps.Map(this.element.nativeElement, mapOptions);
-          resolve(true);
-
-          this.setMe(position.coords.latitude, position.coords.longitude);
-        }else{
-          let latLng = new google.maps.LatLng(50.8389047,12.927764);
-          let mapOptions = {
-            center: latLng,
-            zoom: 15
-          };
-
-          this.map = new google.maps.Map(this.element.nativeElement, mapOptions);
-          resolve(true);
-
-          this.setMe(position.coords.latitude, position.coords.longitude);
-          console.log("Not your Position");
-        }
-      }, (err) => {
-        reject('Could not initialise map');
       });
     });
   }
@@ -245,38 +224,6 @@ export class GoogleMapComponent {
     });
     this.me=marker;
   }
-  public getPosition(): Promise<{lat:number,lng:number}>{
-      return Geolocation.getCurrentPosition().then((position) => {
-        if(position!=null) {
-          this.lat=position.coords.latitude;
-          this.lng=position.coords.longitude;
-          return {lat:this.lat, lng:this.lng};
-        }
-      }, (err) => {
-        this.lat=-1;
-        this.lng=-1;
-        return {lat:this.lat, lng:this.lng};
-      });
-  }
-  /*
-   Position Callback
-   */
-  private watchPosition() {
-    this.watchdog = Geolocation.watchPosition({}, (position, err) => {
-      if(this.map!=undefined) {
-        if (position != undefined) {
-          let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-          this.map.setCenter(latLng);
-          this.setMe(position.coords.latitude, position.coords.longitude);
-        }else{
-          console.log("Position Error")
-        }
-      }else{
-        console.log("Map not initialized");
-      }
-    });
-  }
-
   public retrievePaths(){
     let center = this.map.getCenter();
     this.geo.getLocations(100,[center.lat(),center.lng()],(key, location, distance)=>{
