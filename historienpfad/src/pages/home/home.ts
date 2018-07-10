@@ -35,20 +35,12 @@ export class HomePage {
   }
 
   public testMarker(){
-
-    let center = this.mapComponent.map.getCenter();
-    this.mapComponent.addMarker(
-      this.mapComponent.markers[this.mapComponent.getMarkercount()],
-      center.lat(),
-      center.lng(),"marker");
-
-    this.point.addPoint({name:"Test"+Math.round(Math.random()*10),
-      coords: [center.lat(),center.lng()]});
+    this.mapComponent.setNewMarker();
   }
   ionSelected() {
     //this.scrollArea.scrollToTop();
     //this.refresh();
-    this.getcoords();
+    console.log("Selected");
   }
 
   public getcoords(){

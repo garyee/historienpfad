@@ -35,7 +35,6 @@ export class MyApp {
 
     // set our app's pages
     this.pages = [
-      { title: 'Irgendwas', component: HelloIonicPage },
       { title: 'Spielen', component: HomePage },
       { title: 'Pfad auswählen', component: ListPage },
       { title: 'Pfad bearbeiten', component: HomePage },

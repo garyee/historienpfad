@@ -58,7 +58,7 @@ export class LoginPage {
       .then(
         () => {
           this.menu.enable(true);
-          this.navCtrl.setRoot(HelloIonicPage);
+          this.navCtrl.setRoot(TabsPage);
         },
         error => this.loginError = error.message
       );
@@ -74,7 +74,7 @@ export class LoginPage {
       .then(
         () => {
           this.menu.enable(true);
-          this.navCtrl.setRoot(HelloIonicPage);
+          this.navCtrl.setRoot(TabsPage);
           },
         error => console.log(error.message)
       );
