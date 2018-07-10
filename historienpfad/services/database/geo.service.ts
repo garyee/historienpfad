@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from 'angularfire2/database';
 
 import GeoFire from 'geofire';
-// import { BehaviorSubject } from 'rxjs/BehaviorSubject'
-// import {Point} from "../../src/models/point/point.model";
+import { from } from 'rxjs';
 
 @Injectable()
 export class GeoService {
@@ -15,15 +14,25 @@ export class GeoService {
 
   constructor(private db: AngularFireDatabase) {
     /// Reference database location for GeoFire
-    this.dbRef = this.db.list('/locations');
+    this.dbRef = this.db.list('/geofire');
     this.geoFire = new GeoFire(this.dbRef.query.ref);
+  }
+
+  getLocationByKey(key, cb) {
+    this.geoFire.get(key).then(cb, function (error) {
+      console.error("Error: " + error);
+    });
+  }
+
+  getLocationObservByKey(key) {
+    return from(this.geoFire.get(key));
   }
 
   /// Adds GeoFire data to database
   setLocation(key:string, coords: Array<number>) {
     return this.geoFire.set(key, coords)
       .then(() => console.log('location updated'))
-      .catch((err) => console.log(err))
+      .catch((err) => console.error(err))
   }
 
 

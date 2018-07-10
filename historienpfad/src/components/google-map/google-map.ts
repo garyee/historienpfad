@@ -156,7 +156,6 @@ export class GoogleMapComponent {
 
       Geolocation.getCurrentPosition().then((position) => {
         this.watchPosition();
-        console.log(position);
         if(position!=null) {
           let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
           let mapOptions = {

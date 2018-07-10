@@ -22,11 +22,13 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import {AuthService} from "../../services/auth.service";
 import {GeoService} from "../../services/database/geo.service";
-import {PointListService} from "../../services/database/point-list.service";
+import {PointService} from "../../services/database/point.service";
 import {PositionService} from "../../services/position.service";
 import {LoginPage} from "../pages/login/login";
 import { PositionServiceProvider } from '../providers/position-service/position-service';
 import {LogoutPage} from "../pages/logout/logout";
+import {PathService} from "../../services/database/path.service";
+import {ContentService} from "../../services/database/content.service";
 
 @NgModule({
   declarations: [
@@ -63,10 +65,12 @@ import {LogoutPage} from "../pages/logout/logout";
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthService,
     GeoService,
-    PointListService,
+    PointService,
     AngularFireAuth,
     PositionService,
-    PositionServiceProvider
+    PositionServiceProvider,
+    PathService,
+    ContentService,
   ]
 })
 export class AppModule {}
