@@ -5,7 +5,7 @@ import { map, mergeMap} from "rxjs/operators";
 import {Observable} from "rxjs/Observable";
 import {GeoService} from "./geo.service";
 import {ContentService} from "./content.service";
-import {combineLatest} from 'rxjs/observable/combineLatest';
+import { combineLatest } from 'rxjs';
 import 'rxjs/add/operator/map'
 import {Content} from "../../src/models/content.model";
 
@@ -51,20 +51,30 @@ export class PointService {
   //   return null;
   // }
 
-  getPoint(key, cb) {
+  /*
+  will retrieve point from DB
+  will return observable in every case
+  pass callback-function on second parameter to subscribe to the observable directly
+  Attention: observable is returned even if point is not found in DB in that case the value
+  emitted to the callback will be null!
+   */
+  getPoint(key, cb = undefined) {
     var that = this;
     if (key != null) {
-      const point = this.db.object<Point>(`points/${key}`).valueChanges();
+      let point = this.db.object<Point>(`points/${key}`).valueChanges();
       const content = this.content.getContentObserv(key).valueChanges();
       const coords = this.geo.getLocationObservByKey(key);
 
       const observable = point.pipe(
         mergeMap((pointVal) => {
-          return combineLatest(coords, content).map((combinedVals) => {
-            pointVal['content'] = combinedVals[0];
-            pointVal['coords'] = combinedVals[1];
-            return pointVal;
-          });
+          if(pointVal!==null) {
+            return combineLatest(coords, content).map((combinedVals) => {
+              pointVal['content'] = combinedVals[0];
+              pointVal['coords'] = combinedVals[1];
+              return pointVal;
+            });
+          }
+          return point;
         }));
 
       if (cb !== undefined) {
