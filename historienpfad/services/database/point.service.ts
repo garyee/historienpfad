@@ -69,6 +69,7 @@ export class PointService {
         mergeMap((pointVal) => {
           if(pointVal!==null) {
             return combineLatest(coords, content).map((combinedVals) => {
+              pointVal['key'] = key;
               pointVal['content'] = combinedVals[0];
               pointVal['coords'] = combinedVals[1];
               return pointVal;
