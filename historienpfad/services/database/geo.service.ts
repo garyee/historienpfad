@@ -38,6 +38,10 @@ export class GeoService {
       .catch((err) => console.error(err))
   }
 
+  removeLocation(key){
+    this.geoFire.remove(key);
+  }
+
   /*
   will emit an array with the resulting Keys
    */

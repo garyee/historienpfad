@@ -51,7 +51,7 @@ export class GoogleMapComponent {
       this.retrievePaths();
       console.log("Google Maps ready.")
     }, (err) => {
-      console.log(err);
+      console.error(err);
     });
 
   }
@@ -102,7 +102,7 @@ export class GoogleMapComponent {
                   this.init().then((res) => {
                     console.log("Google Maps ready.");
                   }, (err) => {
-                    console.log(err);
+                    console.error(err);
                   });
 
                 }
@@ -168,7 +168,6 @@ export class GoogleMapComponent {
 
     return new Promise((resolve, reject) => {
       let mylocation = this.pos.getPosition();
-      console.log(mylocation);
       let latLng = new google.maps.LatLng(mylocation.lat, mylocation.lng);
       let mapOptions = {
         center: latLng,
@@ -180,7 +179,6 @@ export class GoogleMapComponent {
       this.directionsDisplay = new google.maps.DirectionsRenderer;
       this.setMe(mylocation.lat, mylocation.lng);
       this.pos.positionSubject.subscribe((data)=>{
-        console.log(data);
         mylocation=this.pos.getPosition();
         this.setMe(mylocation.lat, mylocation.lng);
         this.startNavigating({lat:mylocation.lat,lng: mylocation.lng},{lat:this.lat,lng:this.lng});
@@ -189,7 +187,6 @@ export class GoogleMapComponent {
   }
 
   startNavigating(startposition: {lat:number,lng:number},targetposition: {lat:number,lng:number}){
-    console.log("Start Navigating");
     this.directionsDisplay.setMap(this.map);
     //this.directionsDisplay.setPanel(this.directionsPanel.nativeElement.parentElement);
 
@@ -275,7 +272,6 @@ export class GoogleMapComponent {
       })
     });
      //this.geo.getLocations(100, [center.lat(), center.lng()], (key, location, distance) => {
-       //console.log(location);
        //this.addMarker(this.getMarkercount(), location[0], location[1], ("Entfernung: " + distance));
        //this.point.getPoint(key, (res) => {
        //  this.addMarker(this.getMarkercount(), location[0], location[1], (res.email + ' ' + moment(res.ts).format('YYYY-MM-DD h:mm:ss')));

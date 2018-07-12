@@ -36,6 +36,7 @@ import "froala-editor/js/froala_editor.pkgd.min.js";
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import {PointDisplayPage} from "../pages/point-display/point-display";
 import { Geolocation } from '@ionic-native/geolocation';
+import {UserDataService} from "../../services/database/user-data.service";
 
 @NgModule({
   declarations: [
@@ -80,6 +81,7 @@ import { Geolocation } from '@ionic-native/geolocation';
     AuthService,
     GeoService,
     PointService,
+    UserDataService,
     AngularFireAuth,
     PositionService,
     PositionServiceProvider,

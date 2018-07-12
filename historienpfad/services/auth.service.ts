@@ -2,19 +2,25 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 import GoogleAuthProvider = firebase.auth.GoogleAuthProvider;
+import {UserDataService} from "./database/user-data.service";
 
 @Injectable()
 export class AuthService {
   private user: firebase.User;
 
-  constructor(public afAuth: AngularFireAuth) {
+  constructor(public afAuth: AngularFireAuth,
+              private userService: UserDataService) {
     afAuth.authState.subscribe(user => {
       this.user = user;
+      this.checkUser(user);
     });
   }
 
+  checkUser(user){
+    this.userService.onSignOnActions(user);
+  }
+
   signInWithEmail(credentials) {
-    console.log('Sign in with email');
     return this.afAuth.auth.signInWithEmailAndPassword(credentials.email,
       credentials.password);
   }
@@ -31,8 +37,11 @@ export class AuthService {
     return this.user && this.user.email;
   }
 
+  getUID() {
+    return this.user.uid;
+  }
+
   signInWithGoogle() {
-    console.log('Sign in with google');
     return this.oauthSignIn(new GoogleAuthProvider());
   }
 
@@ -48,7 +57,6 @@ export class AuthService {
             let token = result.credential.accessToken;
             // The signed-in user info.
             let user = result.user;
-            console.log(token, user);
           }).catch(function(error) {
             // Handle Errors here.
             alert(error.message);

@@ -50,7 +50,6 @@ export class ListPage {
   getPaths(radius, coords) {
     this.paths.getPathsByGeofireSearch(radius, coords, (resObj) => {
       if (resObj !== null) {
-        console.log(resObj.key);
         if (!this.isListitem(resObj.key)) {
           this.items.push({
             id: resObj.key,
@@ -78,7 +77,6 @@ export class ListPage {
 
   reorderItems(indexes) {
     let element = this.items[indexes.from];
-    console.log(indexes);
     this.items.splice(indexes.from, 1);
     this.items.splice(indexes.to, 0, element);
     //this.paths = reorderArray(this.paths, indexes);

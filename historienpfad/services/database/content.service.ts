@@ -38,15 +38,21 @@ export class ContentService{
     }
   }
 
-  addContent(key,data){
-    this.contentRef.set(key,data);
-  }
+  // addContent(key,data){
+  //   this.contentRef.set(key,data);
+  // }
 
   pushContent(data){
     return this.contentRef.push({html:data}).key;
   }
 
-  updatePoint(key,data: Content){
-    this.contentRef.update('key', data);
+  updateContent(key,data: Content){
+    this.contentRef.update(key, data);
   }
+
+  removeContent(key){
+    this.contentRef.remove(key);
+  }
+
+
 }

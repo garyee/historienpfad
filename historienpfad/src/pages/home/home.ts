@@ -22,7 +22,8 @@ export class HomePage {
     //   name:     'neuer Pfad',
     //   points:   []});
 
-    // this.paths.getPaths((values)=>{console.log(values)});
+    this.paths.getPaths((values)=>{console.log(values)});
+    this.paths.reorderPointsInPath('-LGzbRfJa203kpVGyVOs',0,1);
     // this.paths.getPath('-LGzbRfJa203kpVGyVOs',(values)=>{console.log(values)});
     // this.paths.removePath('-LGjtJxCPHQ6hGeqtATs');
     // his.paths.getPoints('-LGjtO4mFRowDD_IMIho',(values)=>{console.log(values)})
@@ -43,8 +44,6 @@ export class HomePage {
     //this.scrollArea.scrollToTop();
     //this.refresh();
     this.mapComponent.retrievePaths();
-    console.log(this.auth.getEmail());
-    console.log("Selected Home");
   }
 
   public getcoords(){

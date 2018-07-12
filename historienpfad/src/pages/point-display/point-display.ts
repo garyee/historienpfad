@@ -25,7 +25,6 @@ export class PointDisplayPage {
 
       content.getContent('-LHAZIfMKmon0qQJ9Okp',(content)=>{
         if(content!=null) {
-          console.log(content.html);
           this.htmlContent=content.html;
         }
       })
@@ -33,7 +32,6 @@ export class PointDisplayPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad PointDisplayPage');
   }
 
 }

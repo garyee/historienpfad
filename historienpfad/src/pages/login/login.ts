@@ -65,7 +65,6 @@ export class LoginPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
   }
 
 
@@ -76,7 +75,7 @@ export class LoginPage {
           this.menu.enable(true);
           this.navCtrl.setRoot(TabsPage);
           },
-        error => console.log(error.message)
+        error => console.error(error.message)
       );
   }
 

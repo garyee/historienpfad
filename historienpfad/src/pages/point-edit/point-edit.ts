@@ -39,7 +39,7 @@ export class PointEditPage {
   public save() {
     const htmlString = (<any>$('div#froala')).froalaEditor('html.get');
     if (htmlString != '' && htmlString != '<p></p>') {
-      this.content.pushContent(htmlString + '');
+      this.content.updateContent('-LHAZIfMKmon0qQJ9Okp',{html:htmlString + ''});
     }
   };
 

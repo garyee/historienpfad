@@ -8,6 +8,7 @@ import {ContentService} from "./content.service";
 import { combineLatest } from 'rxjs';
 import 'rxjs/add/operator/map'
 import {Content} from "../../src/models/content.model";
+import {C} from "@angular/core/src/render3";
 
 @Injectable()
 export class PointService {
@@ -30,27 +31,6 @@ export class PointService {
     return this.db.createPushId();
   }
 
-  // getPoint(key,cb){
-  //   var that=this;
-  //   if(key!=null) {
-  //     return this.db.object<Point>(`points/${key}`).valueChanges().subscribe(
-  //       (res) => {
-  //         that.geo.getLocationByKey(key, (coord_res) => {
-  //           if(coord_res!=null) {
-  //             res.coords = coord_res;
-  //           }
-  //           that.content.getContent(key, (content_res) => {
-  //             if(content_res!=null) {
-  //               res.content = content_res.html;
-  //             }
-  //             cb(res);
-  //           });
-  //         });
-  //       });
-  //   }
-  //   return null;
-  // }
-
   /*
   will retrieve point from DB
   will return observable in every case
@@ -70,8 +50,8 @@ export class PointService {
           if(pointVal!==null) {
             return combineLatest(coords, content).map((combinedVals) => {
               pointVal['key'] = key;
-              pointVal['content'] = combinedVals[0];
-              pointVal['coords'] = combinedVals[1];
+              pointVal['content'] = combinedVals[1];
+              pointVal['coords'] = combinedVals[0];
               return pointVal;
             });
           }
@@ -99,7 +79,7 @@ export class PointService {
         this.geo.setLocation(key, coords);
       }
       if (content != undefined) {
-        this.content.addContent(key, content);
+        this.content.updateContent(key, <Content>content);
       }
     }
     return key;
@@ -111,9 +91,15 @@ export class PointService {
       delete data.coords;
     }
     if(data.hasOwnProperty('content')){
-      this.content.updatePoint(key,<Content>data.content);
+      this.content.updateContent(key,<Content>data.content);
       delete data.content;
     }
     this.pointsRef.update(key, data);
+  }
+
+  removePoint(key){
+    this.content.removeContent(key);
+    this.geo.removeLocation(key);
+    this.pointsRef.remove(key);
   }
 }
