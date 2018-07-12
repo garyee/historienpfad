@@ -62,13 +62,14 @@ export class PointService {
     var that = this;
     if (key != null) {
       let point = this.db.object<Point>(`points/${key}`).valueChanges();
-      const content = this.content.getContentObserv(key).valueChanges();
+      const content = this.content.getContent(key);
       const coords = this.geo.getLocationObservByKey(key);
 
       const observable = point.pipe(
         mergeMap((pointVal) => {
           if(pointVal!==null) {
             return combineLatest(coords, content).map((combinedVals) => {
+              pointVal['key'] = key;
               pointVal['content'] = combinedVals[0];
               pointVal['coords'] = combinedVals[1];
               return pointVal;

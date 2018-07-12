@@ -61,6 +61,7 @@ export class PathService {
       return that.getPointsListFromPath(key, undefined).map(
         (pointListVal) => {
           pathVal['points'] = pointListVal;
+          pathVal['key'] = key;
           return pathVal
         }
       )

@@ -29,6 +29,14 @@ import { PositionServiceProvider } from '../providers/position-service/position-
 import {LogoutPage} from "../pages/logout/logout";
 import {PathService} from "../../services/database/path.service";
 import {ContentService} from "../../services/database/content.service";
+import {PointListPage} from "../pages/point-list/point-list";
+import {PointEditPage} from "../pages/point-edit/point-edit";
+
+// Import Froala Editor.
+import "froala-editor/js/froala_editor.pkgd.min.js";
+// Import Angular2 plugin.
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+import {PointDisplayPage} from "../pages/point-display/point-display";
 
 @NgModule({
   declarations: [
@@ -38,6 +46,9 @@ import {ContentService} from "../../services/database/content.service";
     HelloIonicPage,
     ListPage,
     ItemDetailsPage,
+    PointListPage,
+    PointEditPage,
+    PointDisplayPage,
     TabsPage,
     LogoutPage
   ],
@@ -46,7 +57,9 @@ import {ContentService} from "../../services/database/content.service";
     ComponentsModule,
     IonicModule.forRoot(MyApp),
     AngularFireModule.initializeApp(firebaseConfig),
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot(),
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -54,6 +67,8 @@ import {ContentService} from "../../services/database/content.service";
     HomePage,
     HelloIonicPage,
     ItemDetailsPage,
+    PointEditPage,
+    PointDisplayPage,
     ListPage,
     TabsPage,
     LoginPage,

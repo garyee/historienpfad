@@ -32,8 +32,8 @@ export class HomePage {
     // this.paths.getPointsListFromPath('-LGzbRfJa203kpVGyVOs',(values)=>{console.log(values)});
     // this.point.getPointObserv('-LH2GzRWwT4M16m5cE-T',(values)=>{console.log(values)});
     // this.paths.getPointsListFromPath('-LGzbRfJa203kpVGyVOs',(values)=>{console.log(values)});
-    this.geo.getLocations(100,[50.826160,12.945902],(values)=>{console.log(values)});
-    this.paths.getPathsByGeofireSearch(100,[50.826160,12.945902],(values)=>{console.log(values)});
+    // this.geo.getLocations(100,[50.826160,12.945902],(values)=>{console.log(values)});
+    // this.paths.getPathsByGeofireSearch(100,[50.826160,12.945902],(values)=>{console.log(values)});
   }
 
   public testMarker(){
