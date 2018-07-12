@@ -22,9 +22,10 @@ export class HomePage {
     //   name:     'neuer Pfad',
     //   points:   []});
 
-    this.paths.getPaths((values)=>{console.log(values)});
-    this.paths.reorderPointsInPath('-LGzbRfJa203kpVGyVOs',0,1);
-    // this.paths.getPath('-LGzbRfJa203kpVGyVOs',(values)=>{console.log(values)});
+    // this.paths.getPaths((values)=>{console.log(values)});
+    // this.paths.getPath('-LGzbRfJa203kpVGyVOs',undefined,(values)=>{console.log(values)});
+    // this.paths.reorderPointsInPath('-LGzbRfJa203kpVGyVOs',0,1);
+    // this.paths.getPathByPointKey(undefined,'-LH5TVw9RptNZ-rC_wb3',(values)=>{console.log(values)});
     // this.paths.removePath('-LGjtJxCPHQ6hGeqtATs');
     // his.paths.getPoints('-LGjtO4mFRowDD_IMIho',(values)=>{console.log(values)})
     // this.paths.addPointToPath('-LH7_-0W5ibIdyDSmQ8y',
@@ -35,6 +36,7 @@ export class HomePage {
     // this.paths.getPointsListFromPath('-LGzbRfJa203kpVGyVOs',(values)=>{console.log(values)});
     // this.geo.getLocations(100,[50.826160,12.945902],(values)=>{console.log(values)});
     // this.paths.getPathsByGeofireSearch(100,[50.826160,12.945902],(values)=>{console.log(values)});
+    // this.paths.removePointFromPath("-LHF_nSsXjPFlzsWSJT2");
   }
 
   public testMarker(){

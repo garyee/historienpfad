@@ -1,14 +1,15 @@
 import {Injectable} from "@angular/core";
 import {AngularFireDatabase, AngularFireList} from "angularfire2/database";
 import {Point} from "../../src/models/point.model";
-import { map, mergeMap} from "rxjs/operators";
+import {map, mergeMap, take} from "rxjs/operators";
 import {Observable} from "rxjs/Observable";
 import {GeoService} from "./geo.service";
 import {ContentService} from "./content.service";
 import { combineLatest } from 'rxjs';
 import 'rxjs/add/operator/map'
 import {Content} from "../../src/models/content.model";
-import {C} from "@angular/core/src/render3";
+import {PathService} from "./path.service";
+import {deprecate} from "util";
 
 @Injectable()
 export class PointService {
@@ -68,11 +69,16 @@ export class PointService {
 
 
   addPoint(data: Point) {
-    const coords = data.coords;
-    delete data.coords;
-    const content = data.content;
-    delete data.content;
-
+    let coords=undefined;
+    let content=undefined;
+    if(data.hasOwnProperty('coords')) {
+      coords = data.coords;
+      delete data.coords;
+    }
+    if(data.hasOwnProperty('content')) {
+      content = data.content;
+      delete data.content;
+    }
     const key = this.pointsRef.push(data).key;
     if (key != undefined && key != '') {
       if (coords != undefined && Array.isArray(coords) && coords.length > 0) {
@@ -85,7 +91,7 @@ export class PointService {
     return key;
   }
 
-  updatePoint(key, data: Point) {
+  updatePoint(key, data) {
     if(data.hasOwnProperty('coords')){
       this.geo.setLocation(key,data.coords as Array<number>);
       delete data.coords;
@@ -97,9 +103,16 @@ export class PointService {
     this.pointsRef.update(key, data);
   }
 
+  /*
+  This removes the point identified by the key.
+  AND all other data identified by the key (content& location)
+  BUT this does not delete the point from the paths-point list!
+  for this pourpouse use the removePointfrom Path method in path-service
+  @deprecated it is because it is better to use path-service method!
+   */
   removePoint(key){
-    this.content.removeContent(key);
-    this.geo.removeLocation(key);
-    this.pointsRef.remove(key);
+        this.content.removeContent(key);
+        this.geo.removeLocation(key);
+        this.pointsRef.remove(key);
   }
 }

@@ -4,7 +4,7 @@ import {Path} from "../../src/models/path.model";
 import {Observable} from "rxjs/Observable";
 import {Point} from "../../src/models/point.model";
 import {PointService} from "./point.service";
-import {take, map, mergeMap, filter} from 'rxjs/operators';
+import {map, mergeMap, filter, take } from 'rxjs/operators';
 import {of as observableOf} from 'rxjs/observable/of'
 import {merge} from 'rxjs/observable/merge';
 import "rxjs-compat/add/operator/mergeMap";
@@ -42,7 +42,7 @@ export class PathService {
       } else {
         const pathObservables = [];
         pathsList.forEach((path) => {
-          pathObservables.push(that.getPath(path.key, undefined));
+          pathObservables.push(that.getPath(path.key));
         });
         return combineLatest(pathObservables);
       }
@@ -60,10 +60,21 @@ export class PathService {
   B. if flat is true the path object will be emitted as it is in the DB (with no further point infos)
   C. You can subscribe to the observable by passing a callback cb
    */
-  getPath(key, cb = undefined, flat=false) {
+  getPath(path_key=undefined,point_key=undefined, cb = undefined, flat=false) {
+    if(path_key!=undefined){
+      return this.getPathByPathKey(path_key,cb,flat);
+    }else{
+      if(point_key!=undefined){
+        return this.getPathByPointKey(point_key,cb,flat);
+      }
+    }
+    return observableOf(null);
+  }
+
+  private getPathByPathKey(key, cb = undefined, flat=false) {
     var that = this;
-    const observable = this.db.object<Path>(`paths/${key}`).valueChanges();
-    const combinedObv = observable.pipe(mergeMap(pathVal => {
+    const observable = this.db.object<Path>(`paths/${key}`);
+    const combinedObv = observable.valueChanges().pipe(mergeMap(pathVal => {
       return that.getPointsListFromPath(key, undefined).map(
         (pointListVal) => {
           pathVal['points'] = pointListVal;
@@ -74,16 +85,37 @@ export class PathService {
     }));
     if (cb !== undefined) {
       if(flat){
-        observable.subscribe(cb)
+        observable.snapshotChanges().pipe(
+          map(c => ({key: c.payload.key, ...c.payload.val()}))
+        ).subscribe(cb)
       }else {
         combinedObv.subscribe(cb)
       }
     }
     if(flat){
-      return observable;
+      return observable.snapshotChanges().pipe(
+        map(c => ({key: c.payload.key, ...c.payload.val()}))
+      );
     }
     return combinedObv;
   }
+
+  /*
+    returns the point Observable
+    and subscribse to the path.
+   */
+  private getPathByPointKey(point_key,cb=undefined,flat=false){
+    var that=this;
+    const observable = this.points.getPoint(point_key);
+    const pathObs = observable.pipe(mergeMap((point)=>{
+      return that.getPathByPathKey(point.parentKey,undefined,flat);
+    }));
+    if (cb !== undefined) {
+      pathObs.subscribe(cb)
+    }
+    return pathObs;
+  }
+
 
   removePath(key, data) {
     if (data.hasOwnProperty("points") && data.points.length > 0) {
@@ -96,6 +128,18 @@ export class PathService {
       });
     }
     this.pathsRef.remove(key);
+  }
+
+  removePointFromPath(point_key,path_key=undefined){
+    var that=this;
+    this.getPath(path_key,point_key,undefined, true).pipe(take(1)).subscribe(
+      (path)=> {
+        if (path.points!=undefined && path.points.indexOf(point_key) > -1) {
+          path.points.splice(path.points.indexOf(point_key), 1);
+          that.pathFlatUpdate(path);
+        }
+        that.points.removePoint(point_key);
+      });
   }
 
   /*
@@ -131,7 +175,6 @@ export class PathService {
   getPointsListFromPath(key, cb) {
     var that = this;
     const observable = this.db.object<Point[]>(`paths/${key}/points`).valueChanges();
-
     const combindedObv = observable.pipe(mergeMap((keyList) => {
       if (keyList == null) {
         return observable;
@@ -161,10 +204,11 @@ export class PathService {
         if (path === null) {
           console.error('No Path found for key: ' + path_key);
         } else {
+          if (!path.hasOwnProperty('points')){
+            path.points=[];
+          }
           if (path.hasOwnProperty('points') && //point is not in list or in not in point-db either
-            path.points === null &&
             Array.isArray(path.points) &&
-            path.points.length > 0 &&
             (!data.hasOwnProperty('key') ||
             path.points.indexOf(data.key) < 0)
           ) {
@@ -221,38 +265,44 @@ export class PathService {
     return observable;
   }
 
-  /*
-    returns the point Observable
-    and subscribse to the path.
-   */
-  getPathByPointKey(point_key,cb){
-    var that=this;
-    const observable = this.points.getPoint(point_key,(point)=>{
-        that.getPath(point.parentKey,cb);
-      }
-    )
-    return observable;
+  private pathFlatUpdate(path:Path,cb=undefined){
+    const tmp1=this.first(path.points);
+    if(Array.isArray(path.points) &&
+      (path.points.length==0 || typeof this.first(path.points) === "string")){
+      this.pathsRef.set(path.key,path)
+        .then(cb).catch((err)=>console.error(err));
+    }else{
+      console.error('pathFlatUpdate is not for deep-Updates!');
+    }
   }
 
-  private pathFlatUpdate(path:Path,that=undefined){
-    // if(Array.isArray(path.points) && typeof path.points[0] === "string"){
-    //   const tmp=this.pathsRef;
-    //   that.pathsRef.set(path.key,path);
-    // }else{
-      console.error('pathFlatUpdate is not for deep-Updates!');
-    // }
-  }
+  private first (array, n=1){
+    if (array == null)
+      return void 0;
+    if (n == null)
+      return array[0];
+    if (n < 0)
+      return [];
+    return array.slice(0, n);
+  };
 
   reorderPointsInPath(path_key, from, to) {
-    var that=this;
-    this.getPath(path_key,
-      (path) => {
-        let element = path.points[from];
-        path.points.splice(from, 1);
-        path.points.splice(to, 0, element);
-        this.pathFlatUpdate(path,that);
-      }
-      , true);
+    if(from!=to) {
+      var that = this;
+      const observable = this.getPath(path_key, undefined,undefined, true);
+      observable.pipe(take(1)).subscribe(
+        (path) => {
+          let element = path.points[from];
+          path.points.splice(from, 1);
+          path.points.splice(to, 0, element);
+          this.pathFlatUpdate(path, (res) => {
+            if (to == 0 || from == 0) {
+              this.points.updatePoint(path.points[to], {isStartPoint: to == 0});
+              this.points.updatePoint(path.points[from], {isStartPoint: from == 0});
+            }
+          });
+        });
+    }
   }
 
   /*
