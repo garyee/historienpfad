@@ -28,17 +28,22 @@ export class ContentService{
     return this.db.createPushId();
   }
 
-  getContent(key,cb){
+  getContent(key,cb=undefined){
     if(key!=null) {
-      this.db.object<Content>(`content/${key}`).valueChanges().subscribe(cb);
+      const observable=this.db.object<Content>(`content/${key}`).valueChanges()
+      if(cb!=undefined){
+        observable.subscribe(cb);
+      }
+      return observable
     }
-  }
-  getContentObserv(key){
-    return this.db.object<Content>(`content/${key}`);
   }
 
   addContent(key,data){
     this.contentRef.set(key,data);
+  }
+
+  pushContent(data){
+    return this.contentRef.push({html:data}).key;
   }
 
   updatePoint(key,data: Content){

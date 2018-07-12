@@ -12,6 +12,8 @@ import {LoginPage} from "../pages/login/login";
 import {AuthService} from "../../services/auth.service";
 import {TabsPage} from "../pages/tabs/tabs";
 import {LogoutPage} from "../pages/logout/logout";
+import {PointEditPage} from "../pages/point-edit/point-edit";
+import {PointDisplayPage} from "../pages/point-display/point-display";
 
 
 @Component({
@@ -38,6 +40,8 @@ export class MyApp {
       { title: 'Spielen', component: HomePage },
       { title: 'Pfad auswählen', component: ListPage },
       { title: 'Pfad bearbeiten', component: HomePage },
+      { title: 'Point bearbeiten', component: PointEditPage },
+      { title: 'Point info', component: PointDisplayPage },
       { title: 'Logout', component: LogoutPage }
     ];
   }

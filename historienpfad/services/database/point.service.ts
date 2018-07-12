@@ -62,7 +62,7 @@ export class PointService {
     var that = this;
     if (key != null) {
       let point = this.db.object<Point>(`points/${key}`).valueChanges();
-      const content = this.content.getContentObserv(key).valueChanges();
+      const content = this.content.getContent(key);
       const coords = this.geo.getLocationObservByKey(key);
 
       const observable = point.pipe(
