@@ -29,6 +29,7 @@ export class GoogleMapComponent {
   @ViewChild('map') mapElement: ElementRef;
   directionsService: any;
   directionsDisplay: any;
+  waypts: any[] = [];
 
 
   constructor(
@@ -189,14 +190,15 @@ export class GoogleMapComponent {
 
   startNavigating(startposition: {lat:number,lng:number},targetposition: {lat:number,lng:number}){
     console.log("Start Navigating");
-
     this.directionsDisplay.setMap(this.map);
     //this.directionsDisplay.setPanel(this.directionsPanel.nativeElement.parentElement);
 
     this.directionsService.route({
       origin: new google.maps.LatLng(startposition.lat, startposition.lng),
       destination: new google.maps.LatLng(targetposition.lat, targetposition.lng),
-      travelMode: google.maps.TravelMode['WALKING']
+      travelMode: google.maps.TravelMode['WALKING'],
+      waypoints : this.waypts,
+      optimizeWaypoints: false,
     }, (res, status) => {
 
       if(status == google.maps.DirectionsStatus.OK){
@@ -262,10 +264,15 @@ export class GoogleMapComponent {
   }
   public retrievePaths(){
     let center = this.map.getCenter();
+    this.waypts=[];
     this.paths.getPathsByGeofireSearch(100,[center.lat(),center.lng()],(values)=>{
       this.lat=values.coords[0];
       this.lng=values.coords[1];
       this.addMarker(values.key,  values.coords[0], values.coords[1], (values.path.name));
+      this.waypts.push({
+        location: new google.maps.LatLng(values.coords[0], values.coords[1]),
+        stopover: false
+      })
     });
      //this.geo.getLocations(100, [center.lat(), center.lng()], (key, location, distance) => {
        //console.log(location);
