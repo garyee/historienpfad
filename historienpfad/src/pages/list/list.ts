@@ -12,6 +12,7 @@ import moment from "moment";
 import {Geolocation} from "@capacitor/core";
 import {PositionService} from "../../../services/position.service";
 import {PathService} from "../../../services/database/path.service";
+import {forEach} from "@angular/router/src/utils/collection";
 
 @Component({
   selector: 'page-list',
@@ -19,7 +20,7 @@ import {PathService} from "../../../services/database/path.service";
 })
 export class ListPage {
   icons: string[];
-  items: Array<{ id: number, title: string, note: string, icon: string }> = [];
+  items: Array<{ id: string, title: string, note: string, icon: string }> = [];
 
   @ViewChild(GoogleMapComponent) mapComponent: GoogleMapComponent;
 
@@ -49,16 +50,26 @@ export class ListPage {
   getPaths(radius, coords) {
     this.paths.getPathsByGeofireSearch(radius, coords, (resObj) => {
       if (resObj !== null) {
-            this.items.push({
-              id: resObj.key,
-              title: resObj.path.name + ':',
-              note: ('(' + moment().format('YYYY-MM-DD h:mm:ss') + ')'),
-              icon: 'contract'
-            });
+        console.log(resObj.key);
+        if (!this.isListitem(resObj.key)) {
+          this.items.push({
+            id: resObj.key,
+            title: resObj.path.name + ':',
+            note: ('(' + moment().format('YYYY-MM-DD h:mm:ss') + ')'),
+            icon: 'contract'
+          });
+        }
       }
     });
   }
 
+  isListitem(searchkey: string): boolean{
+      for(var i in this.items){
+        if(this.items[i].id==searchkey)
+          return true;
+      }
+      return false;
+  }
   itemTapped(event, item) {
     this.navCtrl.push(ItemDetailsPage, {
       item: item
@@ -67,6 +78,7 @@ export class ListPage {
 
   reorderItems(indexes) {
     let element = this.items[indexes.from];
+    console.log(indexes);
     this.items.splice(indexes.from, 1);
     this.items.splice(indexes.to, 0, element);
     //this.paths = reorderArray(this.paths, indexes);

@@ -13,18 +13,16 @@ import { ItemDetailsPage } from '../pages/item-details/item-details';
 import { ListPage } from '../pages/list/list';
 import {TabsPage} from "../pages/tabs/tabs";
 
-//import { Geolocation } from '@ionic-native/geolocation';
-
 // Import the AF2 Module
 import { AngularFireModule } from 'angularfire2';
 import { firebaseConfig } from '../../firebase.credentials';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
-import {AuthService} from "../../services/auth.service";
-import {GeoService} from "../../services/database/geo.service";
-import {PointService} from "../../services/database/point.service";
-import {PositionService} from "../../services/position.service";
-import {LoginPage} from "../pages/login/login";
+import { AuthService } from "../../services/auth.service";
+import { GeoService } from "../../services/database/geo.service";
+import { PointService } from "../../services/database/point.service";
+import { PositionService } from "../../services/position.service";
+import { LoginPage } from "../pages/login/login";
 import { PositionServiceProvider } from '../providers/position-service/position-service';
 import {LogoutPage} from "../pages/logout/logout";
 import {PathService} from "../../services/database/path.service";
@@ -37,6 +35,7 @@ import "froala-editor/js/froala_editor.pkgd.min.js";
 // Import Angular2 plugin.
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import {PointDisplayPage} from "../pages/point-display/point-display";
+import { Geolocation } from '@ionic-native/geolocation';
 
 @NgModule({
   declarations: [
@@ -84,8 +83,7 @@ import {PointDisplayPage} from "../pages/point-display/point-display";
     AngularFireAuth,
     PositionService,
     PositionServiceProvider,
-    Geolocation
-    PositionServiceProvider,
+    Geolocation,
     PathService,
     ContentService,
   ]

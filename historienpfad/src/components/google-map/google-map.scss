@@ -5,3 +5,11 @@ google-map {
   height: 100%;
 
 }
+.ios, .md {
+  ion-card {
+    max-height: 200px;
+    overflow: scroll;
+    position: absolute;
+    z-index: 1;
+  }
+}

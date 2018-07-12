@@ -42,8 +42,9 @@ export class HomePage {
   ionSelected() {
     //this.scrollArea.scrollToTop();
     //this.refresh();
+    this.mapComponent.retrievePaths();
     console.log(this.auth.getEmail());
-    console.log("Selected");
+    console.log("Selected Home");
   }
 
   public getcoords(){

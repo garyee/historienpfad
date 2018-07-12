@@ -29,7 +29,7 @@ export class PositionService {
       this.watchdog = this.geolocation.watchPosition().filter((p) => p.coords !== undefined).subscribe((position)=>{
         this.lat=position.coords.latitude
         this.lng=position.coords.longitude;
-        console.log(position.coords.longitude + ' ' + position.coords.latitude);
+        console.log("User Position:" + position.coords.longitude + ' ' + position.coords.latitude);
         this.state=true;
         this.state="gps";
         this.positionSubject.next({status: "gps", lat:this.lat, lng:this.lng});
