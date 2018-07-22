@@ -17,8 +17,12 @@ export class GeoService {
 
   constructor(private db: AngularFireDatabase) {
     /// Reference database location for GeoFire
-    this.dbRef = this.db.list('/geofire');
+    this.dbRef = this.db.list('geofire');
     this.geoFire = new GeoFire(this.dbRef.query.ref);
+  }
+
+  getTestValue(){
+    return true;
   }
 
   getLocationByKey(key, cb) {
