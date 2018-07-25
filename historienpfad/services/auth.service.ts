@@ -8,16 +8,14 @@ import {UserDataService} from "./database/user-data.service";
 export class AuthService {
   private user: firebase.User;
 
-  constructor(public afAuth: AngularFireAuth,
-              private userService: UserDataService) {
+  constructor(public afAuth: AngularFireAuth) {
     afAuth.authState.subscribe(user => {
       this.user = user;
-      this.checkUser(user);
     });
   }
 
-  checkUser(user){
-    this.userService.onSignOnActions(user);
+  subscribeToAuthState(cb){
+    this.afAuth.authState.subscribe(cb);
   }
 
   signInWithEmail(credentials) {

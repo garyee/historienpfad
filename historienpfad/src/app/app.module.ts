@@ -37,6 +37,8 @@ import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import {PointDisplayPage} from "../pages/point-display/point-display";
 import { Geolocation } from '@ionic-native/geolocation';
 import {UserDataService} from "../../services/database/user-data.service";
+import {BadgrService} from "../../services/badgr.service";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -60,6 +62,7 @@ import {UserDataService} from "../../services/database/user-data.service";
     AngularFireDatabaseModule,
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot(),
+    HttpClientModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -79,6 +82,7 @@ import {UserDataService} from "../../services/database/user-data.service";
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     AuthService,
+    BadgrService,
     GeoService,
     PointService,
     UserDataService,

@@ -1,13 +1,13 @@
 import {Injectable} from "@angular/core";
 import {AngularFireDatabase, AngularFireList} from "angularfire2/database";
-import {Point} from "../../src/models/point.model";
+import {Point} from "../../src/models/database/point.model";
 import {map, mergeMap, take} from "rxjs/operators";
 import {Observable} from "rxjs/Observable";
 import {GeoService} from "./geo.service";
 import {ContentService} from "./content.service";
 import { combineLatest } from 'rxjs';
 import 'rxjs/add/operator/map'
-import {Content} from "../../src/models/content.model";
+import {Content} from "../../src/models/database/content.model";
 import {PathService} from "./path.service";
 import {deprecate} from "util";
 

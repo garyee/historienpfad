@@ -1,8 +1,8 @@
 import {Injectable} from "@angular/core";
 import {AngularFireDatabase, AngularFireList, AngularFireObject} from "angularfire2/database";
-import {Path} from "../../src/models/path.model";
+import {Path} from "../../src/models/database/path.model";
 import {Observable} from "rxjs/Observable";
-import {Point} from "../../src/models/point.model";
+import {Point} from "../../src/models/database/point.model";
 import {PointService} from "./point.service";
 import {map, mergeMap, filter, take } from 'rxjs/operators';
 import {of as observableOf} from 'rxjs/observable/of'
