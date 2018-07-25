@@ -12,7 +12,7 @@ export class BadgrService {
 
   constructor(public http: HttpClient) {
       this.getToken();
-      this.token.subscribe((res)=>console.log(res),(err)=>console.error(err));
+      this.token.subscribe((res)=>{/*console.log(res)*/},(err)=>console.error(err));
       this.getUserSelf();
   }
 
@@ -31,7 +31,7 @@ export class BadgrService {
           'Accept': 'application/json',
           'Authorization': 'Token ' + token
         }
-      }).subscribe((res)=>{console.log(res)});
+      }).subscribe((res)=>{/*console.log(res)*/});
     });
 
   }

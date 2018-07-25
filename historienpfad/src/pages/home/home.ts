@@ -5,6 +5,7 @@ import {PointService} from "../../../services/database/point.service";
 import {AuthService} from "../../../services/auth.service";
 import {PathService} from "../../../services/database/path.service";
 import {NavController, NavParams} from "ionic-angular";
+import {UserDataService} from "../../../services/database/user-data.service";
 
 
 @Component({
@@ -14,18 +15,27 @@ import {NavController, NavParams} from "ionic-angular";
 export class HomePage {
   private mode = "paths";
   private selectedpath: any;
+  private userLP=false;
+
   @ViewChild(GoogleMapComponent) mapComponent: GoogleMapComponent;
 
   constructor(private geo: GeoService,
               private point: PointService,
               private auth: AuthService,
               private paths: PathService,
+              private user: UserDataService,
               public navCtrl: NavController,
               public navParams: NavParams) {
     this.mode = navParams.get('mode') || "paths";
     if (this.mode === "path") {
       this.selectedpath = this.navParams.get('item');
     }
+    var that=this;
+    this.user.getLPFromUser((lp)=>{
+      if(lp!==undefined) {
+        that.userLP = lp;
+      }
+    });
     // const key=paths.addPath({
     //   name:     'neuer Pfad',
     //   points:   []});

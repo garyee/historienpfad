@@ -20,7 +20,6 @@ export class TabsPage {
 
   constructor(navParams: NavParams) {
     // Set the active tab based on the passed index from menu.ts
-    console.log(navParams.data)
     this.myIndex = navParams.get("tabIndex") || 0;
     this.params = navParams.data;
   }
