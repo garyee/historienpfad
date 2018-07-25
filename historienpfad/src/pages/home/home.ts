@@ -4,7 +4,7 @@ import {GeoService} from "../../../services/database/geo.service";
 import {PointService} from "../../../services/database/point.service";
 import {AuthService} from "../../../services/auth.service";
 import {PathService} from "../../../services/database/path.service";
-import {NavController, NavParams} from "ionic-angular";
+import {AlertController, NavController, NavParams} from "ionic-angular";
 import {UserDataService} from "../../../services/database/user-data.service";
 
 
@@ -16,7 +16,7 @@ export class HomePage {
   private mode = "paths";
   private selectedpath: any;
   private userLP=false;
-
+  public mapclass: string = 'nopoint';
   @ViewChild(GoogleMapComponent) mapComponent: GoogleMapComponent;
 
   constructor(private geo: GeoService,
@@ -25,11 +25,9 @@ export class HomePage {
               private paths: PathService,
               private user: UserDataService,
               public navCtrl: NavController,
-              public navParams: NavParams) {
-    this.mode = navParams.get('mode') || "paths";
-    if (this.mode === "path") {
-      this.selectedpath = this.navParams.get('item');
-    }
+              public navParams: NavParams,
+              public alertCtrl: AlertController) {
+    this.handleMode(navParams.get('mode'));
     var that=this;
     this.user.getLPFromUser((lp)=>{
       if(lp!==undefined) {
@@ -57,27 +55,62 @@ export class HomePage {
     // this.paths.removePointFromPath("-LHF_nSsXjPFlzsWSJT2");
   }
 
+  public handleMode(hmode) {
+    if (hmode == undefined) {
+      this.mode = "paths";
+      return;
+    }
+    this.mode = hmode;
+    if (this.mode === "paths") {
+      this.mapComponent.retrievePaths();
+    } else if (this.mode === "path") {
+      this.selectedpath = this.navParams.get('item');
+    } else if (this.mode === "addpoint") {
+      this.mapclass = "addpoint";
+      this.selectedpath = this.navParams.get('item');
+
+    }
+  }
   public testMarker(){
     this.mapComponent.setNewMarker();
   }
   ionSelected() {
     //this.scrollArea.scrollToTop();
     //this.refresh();
-    this.mode = this.navParams.get('mode') || "paths";
-    if (this.mode === "paths") {
-      this.mapComponent.retrievePaths();
-    } else if (this.mode === "path") {
-      this.selectedpath = this.navParams.get('item');
-    }
+    this.handleMode(this.navParams.get('mode'));
   }
 
-  public getcoords(){
-    let center = this.mapComponent.map.getCenter();
-    // this.geo.getLocations(100,[center.lat(),center.lng()],(key, location, distance)=>{
-    //   this.point.getPoint(key,(res)=>{
-    //     this.mapComponent.addMarker(this.mapComponent.getMarkercount(),location[0],location[1],(res.email+' '+ moment(res.ts).format('YYYY-MM-DD h:mm:ss')));
-    //   });
-    // });
+  public addPoint() {
+    if (this.mode == "addponit") {
+      const prompt = this.alertCtrl.create({
+        title: 'Name des Punkts',
+        message: "Gibt dem Neuen Punkt einen Namen, und eine Kurzbeschreibung",
+        inputs: [
+          {name: 'title', placeholder: 'Name'},
+          {name: 'note', placeholder: 'Beschreibung'},
+        ],
+        buttons: [
+          {
+            text: 'Abbrechen', handler: data => {
+              console.warn('Abgebrochen');
+            }
+          },
+          {
+            text: 'Speichern', handler: data => {
+              console.info('Hinzufügen');
+              let center = this.mapComponent.map.getCenter();
+              console.log(this.selectedpath);
+              this.paths.addPointToPath(this.selectedpath.key,
+                {name: data.title, coords: [center.lat(), center.lng()], content: {html: data.note}});
+              this.paths.getPointsListFromPath(this.selectedpath.key, (values) => {
+                this.mapComponent.addMarker(values.key, center.lat(), center.lng(), values.title);
+              });
+            }
+          }
+        ]
+      });
+      prompt.present();
+    }
   }
 
 
