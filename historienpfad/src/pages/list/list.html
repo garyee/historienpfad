@@ -8,7 +8,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-list reorder="true" (ionItemReorder)="reorderItems($event)">
+  <ion-list reorder="reorderallowed()" (ionItemReorder)="reorderItems($event)">
     <button ion-item *ngFor="let item of items" (click)="itemTapped($event, item)">
       <ion-icon name="{{item.icon}}" item-left></ion-icon>
       {{item.title}}
@@ -18,3 +18,10 @@
     </button>
   </ion-list>
 </ion-content>
+<ion-footer>
+  <button *ngIf="(mode=='addpath')" ion-button color="light" (click)="addPath()">
+    <ion-icon name="ios-add-circle"></ion-icon>
+    Pfad hinzufügen
+  </button>
+</ion-footer>
+

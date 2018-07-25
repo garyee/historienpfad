@@ -1,10 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
-import { GoogleMapComponent } from '../../components/google-map/google-map';
+import {Component, ViewChild} from '@angular/core';
+import {GoogleMapComponent} from '../../components/google-map/google-map';
 import {GeoService} from "../../../services/database/geo.service";
 import {PointService} from "../../../services/database/point.service";
 import {AuthService} from "../../../services/auth.service";
 import {PathService} from "../../../services/database/path.service";
-import {BadgrService} from "../../../services/badgr.service";
+import {NavController, NavParams} from "ionic-angular";
 
 
 @Component({
@@ -12,14 +12,20 @@ import {BadgrService} from "../../../services/badgr.service";
   templateUrl: 'home.html'
 })
 export class HomePage {
-
+  private mode = "paths";
+  private selectedpath: any;
   @ViewChild(GoogleMapComponent) mapComponent: GoogleMapComponent;
 
   constructor(private geo: GeoService,
               private point: PointService,
               private auth: AuthService,
               private paths: PathService,
-              private badges: BadgrService) {
+              public navCtrl: NavController,
+              public navParams: NavParams) {
+    this.mode = navParams.get('mode') || "paths";
+    if (this.mode === "path") {
+      this.selectedpath = this.navParams.get('item');
+    }
     // const key=paths.addPath({
     //   name:     'neuer Pfad',
     //   points:   []});
@@ -39,7 +45,6 @@ export class HomePage {
     // this.geo.getLocations(100,[50.826160,12.945902],(values)=>{console.log(values)});
     // this.paths.getPathsByGeofireSearch(100,[50.826160,12.945902],(values)=>{console.log(values)});
     // this.paths.removePointFromPath("-LHF_nSsXjPFlzsWSJT2");
-        this.badges;
   }
 
   public testMarker(){
@@ -48,7 +53,12 @@ export class HomePage {
   ionSelected() {
     //this.scrollArea.scrollToTop();
     //this.refresh();
-    this.mapComponent.retrievePaths();
+    this.mode = this.navParams.get('mode') || "paths";
+    if (this.mode === "paths") {
+      this.mapComponent.retrievePaths();
+    } else if (this.mode === "path") {
+      this.selectedpath = this.navParams.get('item');
+    }
   }
 
   public getcoords(){
