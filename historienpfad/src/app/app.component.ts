@@ -1,16 +1,14 @@
-import { Component, ViewChild } from '@angular/core';
-import { Platform, MenuController, Nav } from 'ionic-angular';
-import { ListPage } from '../pages/list/list';
-import { StatusBar } from '@ionic-native/status-bar';
-import { SplashScreen } from '@ionic-native/splash-screen';
+import {Component, ViewChild} from '@angular/core';
+import {MenuController, Nav, Platform} from 'ionic-angular';
+import {ListPage} from '../pages/list/list';
+import {StatusBar} from '@ionic-native/status-bar';
+import {SplashScreen} from '@ionic-native/splash-screen';
 import {HomePage} from "../pages/home/home";
 import {LoginPage} from "../pages/login/login";
 import {AuthService} from "../../services/auth.service";
-import {TabsPage} from "../pages/tabs/tabs";
-import {LogoutPage} from "../pages/logout/logout";
 import {PointEditPage} from "../pages/point-edit/point-edit";
 import {PointDisplayPage} from "../pages/point-display/point-display";
-
+import {PageInterface} from "../models/PageInterface.model";
 
 @Component({
   templateUrl: 'app.html'
@@ -20,8 +18,31 @@ export class MyApp {
 
   // make HelloIonicPage the root (or first) page
   rootPage = LoginPage;
-  pages: Array<{title: string, component: any}>;
 
+  // Reference to the app's root nav
+
+  pages: PageInterface[] = [
+    {title: 'Spielen', pageName: 'tabs-page', tabComponent: 'HomePage', index: 0, icon: 'ios-map'},
+    {title: 'Pfad auswählen', pageName: 'tabs-page', tabComponent: 'ListPage', index: 1, icon: 'ios-list-box'},
+    {
+      title: 'Pfad hinzufügen',
+      pageName: 'tabs-page',
+      tabComponent: 'ListPage',
+      mode: "addpath",
+      index: 1,
+      icon: 'ios-add-circle'
+    },
+    {
+      title: 'Pfad bearbeiten',
+      pageName: 'tabs-page',
+      tabComponent: 'ListPage',
+      mode: "editpath",
+      index: 1,
+      icon: 'shuffle'
+    },
+    {title: 'Point bearbeiten', pageName: 'tabs-page', tabComponent: 'PointEditPage', index: 3, icon: 'ios-build'},
+    {title: 'Point info', pageName: 'tabs-page', tabComponent: 'PointDisplayPage', index: 3, icon: 'book'},
+  ];
   constructor(
     public platform: Platform,
     public menu: MenuController,
@@ -30,16 +51,6 @@ export class MyApp {
     private auth: AuthService
   ) {
     this.initializeApp();
-
-    // set our app's pages
-    this.pages = [
-      { title: 'Spielen', component: HomePage },
-      { title: 'Pfad auswählen', component: ListPage },
-      { title: 'Pfad bearbeiten', component: HomePage },
-      { title: 'Point bearbeiten', component: PointEditPage },
-      { title: 'Point info', component: PointDisplayPage },
-      { title: 'Logout', component: LogoutPage }
-    ];
   }
 
   initializeApp() {
@@ -54,7 +65,7 @@ export class MyApp {
       .subscribe(
         user => {
           if (user) {
-            this.nav.setRoot(TabsPage);
+            this.nav.setRoot("tabs-page");
             this.menu.enable(true);
 
           } else {
@@ -69,17 +80,37 @@ export class MyApp {
       );
   }
 
-  openPage(page) {
+  openPage(page: PageInterface) {
     // close the menu when clicking a link from the menu
     this.menu.close();
     // navigate to the new page if it is not the current page
     if(this.auth.authenticated) {
-      this.nav.setRoot(page.component);
+      console.log(page.pageName);
+
+      let params = {};
+      if (page.index) {
+        params["tabIndex"] = page.index;
+      }
+      if (page.mode) {
+        params["mode"] = page.mode;
+      }
+      this.nav.setRoot(page.pageName, params);
+
+      // The index is equal to the order of our tabs inside tabs.ts
+
+      // The active child nav is our Tabs Navigation
+      /*if (this.nav.getActiveChildNav() && page.index != undefined) {
+        this.nav.setRoot(page.pageName, params);
+        this.nav.getActiveChildNav().select(page.index);
+      } else {
+        // Tabs are not active, so reset the root page
+        // In this case: moving to or from SpecialPage
+        this.nav.setRoot(page.pageName, params);
+      }*/
     }else{
       this.nav.setRoot(LoginPage);
     }
   }
-
   login() {
     this.menu.close();
     this.auth.signOut();

@@ -1,9 +1,6 @@
-import { Injectable } from '@angular/core';
-import { AngularFireAuth } from 'angularfire2/auth';
-import {Plugins} from "@capacitor/core";
-import {Subject} from "rxjs/Subject";
+import {Injectable} from '@angular/core';
 import 'rxjs/add/operator/filter';
-import { Geolocation } from '@ionic-native/geolocation';
+import {Geolocation} from '@ionic-native/geolocation';
 import {ReplaySubject} from "rxjs/ReplaySubject";
 
 
@@ -15,9 +12,11 @@ export class PositionService {
   private watchdog: any;
   public positionSubject: ReplaySubject<{status: string,lat: number,lng:number}> = new ReplaySubject<{status: string,lat: number,lng:number}>(1);
   constructor(private geolocation: Geolocation) {
-    this.lat=50.8386721;
-    this.lng=12.9276668;
-    this.state="predefined";
+    //this.lat=50.8386721;
+    //this.lng=12.9276668;
+    this.lat = 0;
+    this.lng = 0;
+    this.state = false;
     this.retPosition();
     this.watch();
   }

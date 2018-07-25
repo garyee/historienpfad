@@ -1,15 +1,13 @@
-import {Component, Input, Renderer2, ElementRef, Inject, ViewChild} from '@angular/core';
+import {Component, ElementRef, Inject, Input, Renderer2, ViewChild} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {Plugins} from '@capacitor/core';
-import {} from '@types/googlemaps';
 import {GeoService} from "../../../services/database/geo.service";
 import {PointService} from "../../../services/database/point.service";
-//import { GoogleMap, GoogleMapsEvent, GoogleMapsLatLng } from './googlemaps';
-const {Geolocation, Network} = Plugins;
-import moment from "moment";
 import {AuthService} from "../../../services/auth.service";
 import {PositionService} from "../../../services/position.service";
 import {PathService} from "../../../services/database/path.service";
+//import { GoogleMap, GoogleMapsEvent, GoogleMapsLatLng } from './googlemaps';
+const {Geolocation, Network} = Plugins;
 
 @Component({
   selector: 'google-map',
@@ -18,14 +16,16 @@ import {PathService} from "../../../services/database/path.service";
 export class GoogleMapComponent {
 
   @Input('apiKey') apiKey: string;
-  public lat: number;
-  public lng: number;
+  @Input('pathparams') pathparams: any;
+  @Input('mode') mode: any;
+  public lat = 0;
+  public lng = 0;
   public map: any;
   public me: any;
   public markers: any[] = [];
   private mapsLoaded: boolean = false;
-  private watchdog: any;
   private networkHandler = null;
+  private positionlock = false;
   @ViewChild('map') mapElement: ElementRef;
   directionsService: any;
   directionsDisplay: any;
@@ -43,12 +43,16 @@ export class GoogleMapComponent {
     private pos: PositionService,
     private paths: PathService
   ){
-
   }
 
   ngOnInit() {
     this.init().then((res) => {
-      this.retrievePaths();
+      if (this.pathparams != undefined) {
+        console.log(this.mode);
+        this.loadPath(this.pathparams.id);
+      } else {
+        this.retrievePaths();
+      }
       console.log("Google Maps ready.")
     }, (err) => {
       console.error(err);
@@ -167,6 +171,19 @@ export class GoogleMapComponent {
   private initMap(): Promise<any> {
 
     return new Promise((resolve, reject) => {
+      this.pos.positionSubject.subscribe((data) => {
+        if (this.map != undefined) {
+          mylocation = this.pos.getPosition();
+          if (!this.positionlock) {
+            this.map.setCenter({lat: mylocation.lat, lng: mylocation.lng});
+            this.positionlock = true;
+          }
+          this.setMe(mylocation.lat, mylocation.lng);
+          if (this.lat !== 0 && this.lng !== 0) {
+            this.startNavigating({lat: mylocation.lat, lng: mylocation.lng}, {lat: this.lat, lng: this.lng});
+          }
+        }
+      });
       let mylocation = this.pos.getPosition();
       let latLng = new google.maps.LatLng(mylocation.lat, mylocation.lng);
       let mapOptions = {
@@ -178,11 +195,24 @@ export class GoogleMapComponent {
       this.directionsService = new google.maps.DirectionsService;
       this.directionsDisplay = new google.maps.DirectionsRenderer;
       this.setMe(mylocation.lat, mylocation.lng);
-      this.pos.positionSubject.subscribe((data)=>{
-        mylocation=this.pos.getPosition();
-        this.setMe(mylocation.lat, mylocation.lng);
-        this.startNavigating({lat:mylocation.lat,lng: mylocation.lng},{lat:this.lat,lng:this.lng});
+    });
+  }
+
+  private loadPath(data) {
+    this.paths.getPath(undefined, this.pathparams.id, (values) => {
+      console.log(values)
+      this.markers = [];
+      values.points.forEach((values) => {
+        this.addMarker(values.key, values.coords[0], values.coords[1], (values.name));
+        this.waypts.push({
+          location: new google.maps.LatLng(values.coords[0], values.coords[1]),
+          stopover: false
+        })
       });
+      //this.pathkey=values.key;
+      this.lat = values.points[values.points.length - 1].coords[0];
+      this.lng = values.points[values.points.length - 1].coords[1];
+      this.startNavigating(this.pos.getPosition(), {lat: this.lat, lng: this.lng})
     });
   }
 
@@ -263,13 +293,7 @@ export class GoogleMapComponent {
     let center = this.map.getCenter();
     this.waypts=[];
     this.paths.getPathsByGeofireSearch(100,[center.lat(),center.lng()],(values)=>{
-      this.lat=values.coords[0];
-      this.lng=values.coords[1];
       this.addMarker(values.key,  values.coords[0], values.coords[1], (values.path.name));
-      this.waypts.push({
-        location: new google.maps.LatLng(values.coords[0], values.coords[1]),
-        stopover: false
-      })
     });
      //this.geo.getLocations(100, [center.lat(), center.lng()], (key, location, distance) => {
        //this.addMarker(this.getMarkercount(), location[0], location[1], ("Entfernung: " + distance));

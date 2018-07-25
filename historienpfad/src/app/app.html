@@ -1,4 +1,4 @@
-<ion-menu [content]="content">
+<ion-menu type="overlay" [content]="content">
 
   <ion-header>
     <ion-toolbar>
@@ -9,6 +9,7 @@
   <ion-content>
     <ion-list>
       <button ion-item *ngFor="let p of pages" (click)="openPage(p)">
+        <ion-icon item-start [name]="p.icon"></ion-icon>
         {{p.title}}
       </button>
       <ion-list-header *ngIf="auth.getEmail()">{{auth.getEmail()}}</ion-list-header>
@@ -23,6 +24,7 @@
         Log in
       </button>
     </ion-list>
+
   </ion-content>
 
 </ion-menu>

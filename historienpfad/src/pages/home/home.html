@@ -9,12 +9,7 @@
 
 
 <ion-content padding>
-  <google-map apiKey="AIzaSyDO_xmwXCG-vtuhmIimC06cK_QvIbnfYNU"></google-map>
-  <ion-card>
-    <ion-card-content>
-      <div #directionsPanel></div>
-    </ion-card-content>
-  </ion-card>
+  <google-map apiKey="AIzaSyDO_xmwXCG-vtuhmIimC06cK_QvIbnfYNU" [mode]="mode" [pathparams]="selectedpath"></google-map>
 </ion-content>
 <ion-footer>
   <button ion-button color="light" (click)="testMarker()">Test Marker</button>
