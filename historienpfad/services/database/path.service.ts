@@ -142,8 +142,9 @@ export class PathService {
       });
   }
 
-  /*
-  Adds a path to the DB
+  /**
+   * Adds a path to the DB
+   * and returns the key
    */
   addPath(path) {
     let points = undefined;
@@ -170,6 +171,7 @@ export class PathService {
         this.addPointToPath(pathKey, pointsObj);
       });
     }
+    return pathKey;
   }
 
   getPointsListFromPath(key, cb) {
