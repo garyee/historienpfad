@@ -172,7 +172,7 @@ export class GoogleMapComponent {
       let params = {};
       params["tabIndex"] = 1;
       params["item"] = {key: markerid};
-      params["mode"] = "path";
+      params["mode"] = this.mode;
       this.clickcb.next(params);
       //this.mode="path";
       //this.pathparams = {id: markerid};

@@ -15,4 +15,11 @@
   <h4 text-center *ngIf="selectedItem">
     You navigated here from <b>{{selectedItem.title}}</b>
   </h4>
+  <div *ngIf="(mode=='point')" [innerHTML]="sanitizer.bypassSecurityTrustHtml(htmlContent)"></div>
+  <div *ngIf="(mode=='editpoint')">
+    <button (click)="save()">Save</button>
+    <div id="froala" [froalaEditor]="titleOptions"></div>
+  </div>
+
 </ion-content>
+

@@ -83,12 +83,16 @@ export class ListPage {
     });
     prompt.present();
   }
-  public reorderallowed(): boolean {
-    if (this.mode == "path") {
-      return true;
-    } else {
-      return false;
-    }
+
+  public editPath(key) {
+    let params = {
+      pageName: 'tabs-page',
+      tabComponent: 'ListPage',
+      mode: "editpath",
+      index: 1,
+      icon: 'shuffle'
+    };
+
   }
 
   public getPaths(radius, coords) {
@@ -125,7 +129,15 @@ export class ListPage {
     });
   }
 
-  isListitem(searchkey: string): boolean{
+  public reorderallowed(): boolean {
+    if (this.mode == "path") {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  public isListitem(searchkey: string): boolean {
       for(var i in this.items){
         if(this.items[i].id==searchkey)
           return true;
@@ -144,6 +156,16 @@ export class ListPage {
       this.tabs.select(0);
     }
     if (this.mode == "editpath") {
+      let params = {};
+      if (item) {
+        params["tabIndex"] = 2;
+        params["item"] = item;
+        params["mode"] = "path";
+      }
+      this.navCtrl.setRoot("tabs-page", params);
+      this.tabs.select(0);
+    }
+    if (this.mode == "addpath") {
       let params = {};
       if (item) {
         params["tabIndex"] = 2;

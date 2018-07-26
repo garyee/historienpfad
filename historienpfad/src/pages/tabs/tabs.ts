@@ -2,7 +2,6 @@ import {Component} from '@angular/core';
 import {HomePage} from '../home/home'
 import {ListPage} from "../list/list";
 import {ItemDetailsPage} from "../item-details/item-details";
-import {PointEditPage} from "../point-edit/point-edit";
 import {IonicPage, NavController, NavParams} from "ionic-angular";
 
 @IonicPage({name: 'tabs-page'})
@@ -14,7 +13,6 @@ export class TabsPage {
   HomePage = HomePage;
   ItemDetailsPage = ItemDetailsPage;
   ListPage = ListPage;
-  PointEditPage = PointEditPage;
   myIndex: number;
   params: any;
 
@@ -27,10 +25,8 @@ export class TabsPage {
   }
 
   public updateParams(id) {
-    console.log("Seletced:" + id)
     this.myIndex = id;
     this.params = this.navParams.data;
-
   }
 
   public getSelectedIndex() {

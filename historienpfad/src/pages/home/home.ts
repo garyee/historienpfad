@@ -4,7 +4,7 @@ import {GeoService} from "../../../services/database/geo.service";
 import {PointService} from "../../../services/database/point.service";
 import {AuthService} from "../../../services/auth.service";
 import {PathService} from "../../../services/database/path.service";
-import {AlertController, NavController, NavParams, Tabs} from "ionic-angular";
+import {AlertController, App, NavController, NavParams, Tabs} from "ionic-angular";
 import {UserDataService} from "../../../services/database/user-data.service";
 import {BadgrService} from "../../../services/badgr.service";
 
@@ -21,7 +21,8 @@ export class HomePage {
   public mapclass: string = 'nopoint';
   @ViewChild(GoogleMapComponent) mapComponent: GoogleMapComponent;
 
-  constructor(private geo: GeoService,
+  constructor(private app: App,
+              private geo: GeoService,
               private point: PointService,
               private auth: AuthService,
               private paths: PathService,
@@ -89,7 +90,7 @@ export class HomePage {
 
   public clickCallback(data) {
     this.tabs.select(1);
-    this.navCtrl.setRoot("tabs-page", data);
+    this.app.getRootNav().push("tabs-page", data);
   }
   public addPoint() {
     if (this.mode == "addpoint") {
@@ -114,7 +115,7 @@ export class HomePage {
                 mode: "editpath",
                 item: {key: this.selectedpath.key}
               }
-              this.navCtrl.setRoot("tabs-page", params);
+              this.app.getRootNav().push("tabs-page", params);
             }
           },
           {

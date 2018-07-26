@@ -6,8 +6,6 @@ import {SplashScreen} from '@ionic-native/splash-screen';
 import {HomePage} from "../pages/home/home";
 import {LoginPage} from "../pages/login/login";
 import {AuthService} from "../../services/auth.service";
-import {PointEditPage} from "../pages/point-edit/point-edit";
-import {PointDisplayPage} from "../pages/point-display/point-display";
 import {PageInterface} from "../models/PageInterface.model";
 import {ProfilPage} from "../pages/profil/profil";
 @Component({
@@ -32,16 +30,6 @@ export class MyApp {
       index: 1,
       icon: 'ios-add-circle'
     },
-    {
-      title: 'Pfad bearbeiten',
-      pageName: 'tabs-page',
-      tabComponent: 'ListPage',
-      mode: "editpath",
-      index: 1,
-      icon: 'shuffle'
-    },
-    {title: 'Point bearbeiten', pageName: 'tabs-page', tabComponent: 'PointEditPage', index: 3, icon: 'ios-build'},
-    {title: 'Point info', pageName: 'tabs-page', tabComponent: 'PointDisplayPage', index: 3, icon: 'book'},
     {title: 'Profil', pageName: ProfilPage, icon: 'contact'},
   ];
   constructor(

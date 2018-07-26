@@ -23,13 +23,10 @@ import {LoginPage} from "../pages/login/login";
 import {PositionServiceProvider} from '../providers/position-service/position-service';
 import {PathService} from "../../services/database/path.service";
 import {ContentService} from "../../services/database/content.service";
-import {PointListPage} from "../pages/point-list/point-list";
-import {PointEditPage} from "../pages/point-edit/point-edit";
 // Import Froala Editor.
 import "froala-editor/js/froala_editor.pkgd.min.js";
 // Import Angular2 plugin.
 import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
-import {PointDisplayPage} from "../pages/point-display/point-display";
 import {Geolocation} from '@ionic-native/geolocation';
 import {UserDataService} from "../../services/database/user-data.service";
 import {BadgrService} from "../../services/badgr.service";
@@ -43,9 +40,6 @@ import {ProfilPage} from "../pages/profil/profil";
     HomePage,
     ListPage,
     ItemDetailsPage,
-    PointListPage,
-    PointEditPage,
-    PointDisplayPage,
     ProfilPage,
   ],
   imports: [
@@ -63,8 +57,6 @@ import {ProfilPage} from "../pages/profil/profil";
     MyApp,
     HomePage,
     ItemDetailsPage,
-    PointEditPage,
-    PointDisplayPage,
     ListPage,
     LoginPage,
     ProfilPage,
