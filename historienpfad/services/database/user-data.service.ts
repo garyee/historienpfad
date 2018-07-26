@@ -46,8 +46,10 @@ export class UserDataService {
     if (user != null) {
       var that = this;
       this.getUserDataFromDB(undefined, user.uid, true).pipe(take(1)).subscribe((data) => {
-        if (data == null || data == {}) {
+        if (data == null) {
           data = <UserData>that.firstLoginActions(user);
+        } else {
+          data = {};
         }
         data.lastLoginTs = moment().valueOf();
         that.updateUserData(data);
@@ -63,10 +65,11 @@ export class UserDataService {
    */
   firstLoginActions(user): Object {
     const rtnObj = {lp: 100};
+    rtnObj['email']=user.email;
     if (user.displayName && user.displayName != null && user.displayName != '') {
-      rtnObj['name']=user.displayName;
+      rtnObj['name'] = user.displayName;
     } else {
-  rtnObj['name']=user.email;
+      rtnObj['name'] = user.email;
     }
     return rtnObj;
   }
@@ -80,7 +83,7 @@ export class UserDataService {
    * @param {any} key
    * @returns {any}
    */
-  private getUserDataFromDB(cb = undefined, key = undefined, withOutKey = undefined): Observable<UserData> {
+  getUserDataFromDB(cb = undefined, key = undefined, withOutKey = undefined): Observable<UserData> {
     let observable = null;
     if (key) {
       if (withOutKey) {
@@ -96,6 +99,16 @@ export class UserDataService {
       observable.subscribe(cb)
     }
     return observable;
+  }
+
+  /**
+   * workaround for getUserDataFromDB not triggering on second subscribe
+   * @param cb
+   */
+  getUserObsv(cb):void{
+    const key= this.getUIDWrapper();
+    const observable = this.db.object<UserData>(`users/${key}`).valueChanges();
+    observable.subscribe(cb);
   }
 
   /*

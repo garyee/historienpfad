@@ -21,7 +21,6 @@ import {PointService} from "../../services/database/point.service";
 import {PositionService} from "../../services/position.service";
 import {LoginPage} from "../pages/login/login";
 import {PositionServiceProvider} from '../providers/position-service/position-service';
-import {LogoutPage} from "../pages/logout/logout";
 import {PathService} from "../../services/database/path.service";
 import {ContentService} from "../../services/database/content.service";
 import {PointListPage} from "../pages/point-list/point-list";
@@ -35,6 +34,7 @@ import {Geolocation} from '@ionic-native/geolocation';
 import {UserDataService} from "../../services/database/user-data.service";
 import {BadgrService} from "../../services/badgr.service";
 import {HttpClientModule} from "@angular/common/http";
+import {ProfilPage} from "../pages/profil/profil";
 
 @NgModule({
   declarations: [
@@ -46,7 +46,7 @@ import {HttpClientModule} from "@angular/common/http";
     PointListPage,
     PointEditPage,
     PointDisplayPage,
-    LogoutPage
+    ProfilPage,
   ],
   imports: [
     BrowserModule,
@@ -67,7 +67,7 @@ import {HttpClientModule} from "@angular/common/http";
     PointDisplayPage,
     ListPage,
     LoginPage,
-    LogoutPage
+    ProfilPage,
   ],
   providers: [
     StatusBar,

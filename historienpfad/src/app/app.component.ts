@@ -9,7 +9,7 @@ import {AuthService} from "../../services/auth.service";
 import {PointEditPage} from "../pages/point-edit/point-edit";
 import {PointDisplayPage} from "../pages/point-display/point-display";
 import {PageInterface} from "../models/PageInterface.model";
-
+import {ProfilPage} from "../pages/profil/profil";
 @Component({
   templateUrl: 'app.html'
 })
@@ -42,6 +42,7 @@ export class MyApp {
     },
     {title: 'Point bearbeiten', pageName: 'tabs-page', tabComponent: 'PointEditPage', index: 3, icon: 'ios-build'},
     {title: 'Point info', pageName: 'tabs-page', tabComponent: 'PointDisplayPage', index: 3, icon: 'book'},
+    {title: 'Profil', pageName: ProfilPage, icon: 'contact'},
   ];
   constructor(
     public platform: Platform,
@@ -85,8 +86,6 @@ export class MyApp {
     this.menu.close();
     // navigate to the new page if it is not the current page
     if(this.auth.authenticated) {
-      console.log(page.pageName);
-
       let params = {};
       if (page.index) {
         params["tabIndex"] = page.index;
@@ -94,7 +93,8 @@ export class MyApp {
       if (page.mode) {
         params["mode"] = page.mode;
       }
-      this.nav.setRoot(page.pageName, params);
+        this.nav.setRoot(page.pageName, params);
+
 
       // The index is equal to the order of our tabs inside tabs.ts
 
