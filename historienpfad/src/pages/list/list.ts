@@ -53,30 +53,31 @@ export class ListPage {
 
   public addPath() {
     const prompt = this.alertCtrl.create({
-      title: 'Login',
+      title: 'Pfadname',
       message: "Gibt dem Neuen Pfad einen Namen",
-      inputs: [
-        {
-          name: 'title',
-          placeholder: 'Name'
-        },
-      ],
+      inputs: [{name: 'title', placeholder: 'Name'},],
       buttons: [
         {
-          text: 'Abbrechen',
-          handler: data => {
-            console.log('Abgebrochen');
+          text: 'Abbrechen', handler: data => {
+            console.warn('Abgebrochen');
           }
         },
         {
-          text: 'Speichern',
-          handler: data => {
-            console.log('Hinzufügen');
+          text: 'Speichern', handler: data => {
+            console.info('Hinzufügen');
             const key = this.paths.addPath({
-                name: 'data.title',
+              name: data.title,
                 points: []
               }
             );
+            console.log(key);
+            let params = {};
+            params = {
+              tabIndex: 0,
+              mode: "addpoint",
+              item: {key: key, name: data.title, note: ''}
+            }
+            this.navCtrl.setRoot("tabs-page", params);
             this.pos.getPosition();
 
           }

@@ -8,7 +8,6 @@ import {PositionService} from "../../../services/position.service";
 import {PathService} from "../../../services/database/path.service";
 //import { GoogleMap, GoogleMapsEvent, GoogleMapsLatLng } from './googlemaps';
 const {Geolocation, Network} = Plugins;
-import {} from '@types/googlemaps';
 
 @Component({
   selector: 'google-map',
@@ -23,6 +22,7 @@ export class GoogleMapComponent {
   public lng = 0;
   public map: any;
   public me: any;
+  public middle: any;
   public markers: any[] = [];
   private mapsLoaded: boolean = false;
   private networkHandler = null;
@@ -54,7 +54,7 @@ export class GoogleMapComponent {
       } else {
         this.retrievePaths();
       }
-      console.log("Google Maps ready.")
+      console.info("Google Maps ready.")
     }, (err) => {
       console.error(err);
     });
@@ -77,96 +77,64 @@ export class GoogleMapComponent {
   }
 
   private loadSDK(): Promise<any> {
-
-    console.log("Loading Google Maps SDK");
-
+    console.info("Loading Google Maps SDK");
     return new Promise((resolve, reject) => {
-
       if (!this.mapsLoaded) {
-
         Network.getStatus().then((status) => {
-
           if (status.connected) {
-
             this.injectSDK().then((res) => {
               resolve(true);
             }, (err) => {
               reject(err);
             });
-
           } else {
-
             if (this.networkHandler == null) {
-
               this.networkHandler = Network.addListener('networkStatusChange', (status) => {
-
                 if (status.connected) {
-
                   this.networkHandler.remove();
-
                   this.init().then((res) => {
-                    console.log("Google Maps ready.");
+                    console.info("Google Maps ready.");
                   }, (err) => {
                     console.error(err);
                   });
-
                 }
-
               });
-
             }
-
             reject('Not online');
           }
-
         }, (err) => {
-
           // NOTE: navigator.onLine temporarily required until Network plugin has web implementation
           if (navigator.onLine) {
-
             this.injectSDK().then((res) => {
               resolve(true);
             }, (err) => {
               reject(err);
             });
-
           } else {
             reject('Not online');
           }
-
         });
-
       } else {
         reject('SDK already loaded');
       }
-
     });
-
-
   }
 
   private injectSDK(): Promise<any> {
-
     return new Promise((resolve, reject) => {
-
       window['mapInit'] = () => {
         this.mapsLoaded = true;
         resolve(true);
       }
-
       let script = this.renderer.createElement('script');
       script.id = 'googleMaps';
-
       if (this.apiKey) {
         script.src = 'https://maps.googleapis.com/maps/api/js?key=' + this.apiKey + '&callback=mapInit';
       } else {
         script.src = 'https://maps.googleapis.com/maps/api/js?callback=mapInit';
       }
-
       this.renderer.appendChild(this._document.body, script);
-
     });
-
   }
 
   private initMap(): Promise<any> {
