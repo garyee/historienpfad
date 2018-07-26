@@ -8,6 +8,7 @@ import {PositionService} from "../../../services/position.service";
 import {PathService} from "../../../services/database/path.service";
 //import { GoogleMap, GoogleMapsEvent, GoogleMapsLatLng } from './googlemaps';
 const {Geolocation, Network} = Plugins;
+import {} from '@types/googlemaps';
 
 @Component({
   selector: 'google-map',

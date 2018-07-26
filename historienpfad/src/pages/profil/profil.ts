@@ -31,7 +31,6 @@ export class ProfilPage {
       that.email = data.email;
       that.lp = data.lp;
     });
-
   }
 
   reset() {

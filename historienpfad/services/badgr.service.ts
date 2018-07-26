@@ -40,13 +40,6 @@ export class BadgrService {
     }
   }
 
-  getUserBadges() {
-    var that = this;
-    // this.token.subscribe((token) => {
-    //   that.callBadgr('issuers/' + issuerID + '/assertions')
-    // });
-  }
-
   getUserSelf() {
     var that = this;
     that.callBadgr('users/self', 'get', (res) => {
@@ -54,7 +47,6 @@ export class BadgrService {
     that.callBadgr('issuers', 'get',
       (res) => {
         const issuerID = res['result'][0]['entityId'];
-        that.getAllBadgesFromIssuer(issuerID);
         that.callBadgr('issuers/' + issuerID + '/badgeclasses', 'get',
           (res) => {
             // console.log(res);
@@ -169,19 +161,30 @@ export class BadgrService {
 
   }
 
-  getAllBadgesFromIssuer(issuerID) {
-    this.user.getUserDataFromDB((userData) => {
-      if (userData.email) {
-        this.callBadgr('issuers/' + issuerID + '/assertions?recipient=' + userData.email, 'get',
-          (res) => {
-            console.log(res);
-          });
-      }
+  private getAllBadgesFromIssuer(issuerID, mail, cb) {
+    this.callBadgr('issuers/' + issuerID + '/assertions?recipient=' + mail, 'get', cb);
+  }
+
+  getAllBadgesForUser(cb) {
+    var that = this;
+    this.getIssuerIDFromDB((issuerID) => {
+      this.user.getUserDataFromDB((userData) => {
+        if (userData != null && userData.email && issuerID != null) {
+          that.getAllBadgesFromIssuer(issuerID, userData.email, cb);
+
+        }
+      });
     });
   }
 
-  getAllBadgesForUser() {
+  ///////////////////////DB functions
 
+  getIssuerIDFromDB(cb): Observable<string> {
+    const observ = this.issuerList.pipe(map((data) => {
+      return data[0]['key']
+    }))
+    observ.subscribe(cb);
+    return observ
   }
 
 }
