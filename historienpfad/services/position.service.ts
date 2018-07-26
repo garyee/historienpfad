@@ -12,10 +12,8 @@ export class PositionService {
   private watchdog: any;
   public positionSubject: ReplaySubject<{status: string,lat: number,lng:number}> = new ReplaySubject<{status: string,lat: number,lng:number}>(1);
   constructor(private geolocation: Geolocation) {
-    //this.lat=50.8386721;
-    //this.lng=12.9276668;
-    this.lat = 0;
-    this.lng = 0;
+    this.lat = 50.8386721;
+    this.lng = 12.9276668;
     this.state = false;
     this.retPosition();
     this.watch();
@@ -30,7 +28,6 @@ export class PositionService {
         this.lng=position.coords.longitude;
         // console.log("User Position:" + position.coords.longitude + ' ' + position.coords.latitude);
         this.state=true;
-        this.state="gps";
         this.positionSubject.next({status: "gps", lat:this.lat, lng:this.lng});
       });
 

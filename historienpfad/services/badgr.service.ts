@@ -5,8 +5,6 @@ import {TokenResponse} from "../src/models/responses/token.response.model";
 import {map, mergeMap, filter, take} from 'rxjs/operators';
 import {Observable} from "rxjs/Observable";
 import {AngularFireDatabase, AngularFireList} from "angularfire2/database";
-import {Point} from "../src/models/database/point.model";
-import {UserData} from "../src/models/database/userdata.model";
 import moment from "moment";
 import {UserDataService} from "./database/user-data.service";
 
