@@ -2,9 +2,7 @@ import {Injectable} from "@angular/core";
 import {AngularFireDatabase, AngularFireList} from "angularfire2/database";
 import {map, take} from "rxjs/operators";
 import {Observable} from "rxjs/Observable";
-import {GeoService} from "./geo.service";
 import {UserData} from "../../src/models/database/userdata.model";
-import {Path} from "../../src/models/database/path.model";
 import moment from "moment";
 import {AuthService} from "../auth.service";
 

@@ -1,6 +1,10 @@
-<ion-tabs [selectedIndex]="myIndex" class="tabs-positive tabs-icon-only">
-  <ion-tab [root]="HomePage" [rootParams]="params" tabTitle="Karte" tabIcon="ios-map"></ion-tab>
-  <ion-tab [root]="ListPage" [rootParams]="params" tabTitle="Pfad" tabIcon="ios-list-box"></ion-tab>
-  <ion-tab [root]="ItemDetailsPage" [rootParams]="params" tabTitle="Details" tabIcon="md-book"></ion-tab>
-  <ion-tab [root]="PointEditPage" [rootParams]="params" tabTitle="Details" tabIcon="md-book"></ion-tab>
+<ion-tabs [selectedIndex]="getSelectedIndex()" class="tabs-positive tabs-icon-only">
+  <ion-tab [root]="HomePage" [rootParams]="params" tabTitle="Karte" tabIcon="ios-map"
+           (ionSelect)="updateParams(0)"></ion-tab>
+  <ion-tab [root]="ListPage" [rootParams]="params" tabTitle="Pfad" tabIcon="ios-list-box"
+           (ionSelect)="updateParams(1)"></ion-tab>
+  <ion-tab [root]="ItemDetailsPage" [rootParams]="params" tabTitle="Details" tabIcon="md-book"
+           (ionSelect)="updateParams(2)"></ion-tab>
+  <ion-tab [root]="PointEditPage" [rootParams]="params" tabTitle="Details" tabIcon="md-book"
+           (ionSelect)="updateParams(3)"></ion-tab>
 </ion-tabs>

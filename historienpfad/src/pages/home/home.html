@@ -13,5 +13,5 @@
 
 <ion-content padding>
   <google-map apiKey="AIzaSyDO_xmwXCG-vtuhmIimC06cK_QvIbnfYNU" [class]="mapclass" (press)="addPoint()" [mode]="mode"
-              [pathparams]="selectedpath"></google-map>
+              (clickcb)="clickCallback($event)" [pathparams]="selectedpath"></google-map>
 </ion-content>

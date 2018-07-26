@@ -4,7 +4,7 @@ import {GeoService} from "../../../services/database/geo.service";
 import {PointService} from "../../../services/database/point.service";
 import {AuthService} from "../../../services/auth.service";
 import {PathService} from "../../../services/database/path.service";
-import {AlertController, NavController, NavParams} from "ionic-angular";
+import {AlertController, NavController, NavParams, Tabs} from "ionic-angular";
 import {UserDataService} from "../../../services/database/user-data.service";
 import {BadgrService} from "../../../services/badgr.service";
 
@@ -16,6 +16,7 @@ import {BadgrService} from "../../../services/badgr.service";
 export class HomePage {
   private mode = "paths";
   private selectedpath: any;
+  private selectedpathcount: number = 0;
   private userLP=false;
   public mapclass: string = 'nopoint';
   @ViewChild(GoogleMapComponent) mapComponent: GoogleMapComponent;
@@ -28,7 +29,8 @@ export class HomePage {
               private user: UserDataService,
               public navCtrl: NavController,
               public navParams: NavParams,
-              public alertCtrl: AlertController) {
+              public alertCtrl: AlertController,
+              private tabs: Tabs) {
     this.handleMode(navParams.get('mode'));
     var that=this;
     this.user.getLPFromUser((lp)=>{
@@ -81,14 +83,19 @@ export class HomePage {
   ionSelected() {
     //this.scrollArea.scrollToTop();
     //this.refresh();
+    console.log(this.navParams.data);
     this.handleMode(this.navParams.get('mode'));
   }
 
+  public clickCallback(data) {
+    this.tabs.select(1);
+    this.navCtrl.setRoot("tabs-page", data);
+  }
   public addPoint() {
-    if (this.mode == "addponit") {
+    if (this.mode == "addpoint") {
       const prompt = this.alertCtrl.create({
         title: 'Name des Punkts',
-        message: "Gibt dem Neuen Punkt einen Namen, und eine Kurzbeschreibung",
+        message: "Gibt dem neuen Punkt einen Namen, und eine Kurzbeschreibung",
         inputs: [
           {name: 'title', placeholder: 'Name'},
           {name: 'note', placeholder: 'Beschreibung'},
@@ -100,20 +107,33 @@ export class HomePage {
             }
           },
           {
+            text: 'Pfad beenden', handler: data => {
+              console.warn('Pfad fertig');
+              let params = {
+                tabIndex: 1,
+                mode: "editpath",
+                item: {key: this.selectedpath.key}
+              }
+              this.navCtrl.setRoot("tabs-page", params);
+            }
+          },
+          {
             text: 'Speichern', handler: data => {
               console.info('Hinzufügen');
               let center = this.mapComponent.map.getCenter();
               console.log(this.selectedpath);
               this.paths.addPointToPath(this.selectedpath.key,
                 {name: data.title, coords: [center.lat(), center.lng()], content: {html: data.note}});
-              this.paths.getPointsListFromPath(this.selectedpath.key, (values) => {
-                this.mapComponent.addMarker(values.key, center.lat(), center.lng(), values.title);
-              });
             }
           }
         ]
       });
       prompt.present();
+      let center = this.mapComponent.map.getCenter();
+      this.paths.getPointsListFromPath(this.selectedpath.key, (values) => {
+        this.mapComponent.addMarker(values.key, center.lat(), center.lng(), values.title);
+      });
+
     }
   }
 

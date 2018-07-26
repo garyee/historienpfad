@@ -3,7 +3,7 @@ import {HomePage} from '../home/home'
 import {ListPage} from "../list/list";
 import {ItemDetailsPage} from "../item-details/item-details";
 import {PointEditPage} from "../point-edit/point-edit";
-import {IonicPage, NavParams} from "ionic-angular";
+import {IonicPage, NavController, NavParams} from "ionic-angular";
 
 @IonicPage({name: 'tabs-page'})
 @Component({
@@ -18,10 +18,22 @@ export class TabsPage {
   myIndex: number;
   params: any;
 
-  constructor(navParams: NavParams) {
+  constructor(public navParams: NavParams,
+              public navCtrl: NavController) {
     // Set the active tab based on the passed index from menu.ts
     this.myIndex = navParams.get("tabIndex") || 0;
     this.params = navParams.data;
+
+  }
+
+  public updateParams(id) {
+    console.log("Seletced:" + id)
+    this.myIndex = id;
+    this.params = this.navParams.data;
+
+  }
+
+  public getSelectedIndex() {
+    return this.myIndex;
   }
 }
-

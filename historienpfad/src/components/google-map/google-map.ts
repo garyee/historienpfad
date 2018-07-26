@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, Input, Renderer2, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Inject, Input, Output, Renderer2, ViewChild} from '@angular/core';
 import {DOCUMENT} from '@angular/platform-browser';
 import {Plugins} from '@capacitor/core';
 import {GeoService} from "../../../services/database/geo.service";
@@ -6,18 +6,21 @@ import {PointService} from "../../../services/database/point.service";
 import {AuthService} from "../../../services/auth.service";
 import {PositionService} from "../../../services/position.service";
 import {PathService} from "../../../services/database/path.service";
-//import { GoogleMap, GoogleMapsEvent, GoogleMapsLatLng } from './googlemaps';
+import {} from './googlemaps';
+import {NavController} from "ionic-angular";
 const {Geolocation, Network} = Plugins;
+declare var google;
 
 @Component({
   selector: 'google-map',
   templateUrl: 'google-map.html'
 })
 export class GoogleMapComponent {
-
   @Input('apiKey') apiKey: string;
   @Input('pathparams') pathparams: any;
   @Input('mode') mode: any;
+  @Output('clickcb') clickcb = new EventEmitter();
+
   public lat = 0;
   public lng = 0;
   public map: any;
@@ -42,7 +45,8 @@ export class GoogleMapComponent {
     private point: PointService,
     private auth: AuthService,
     private pos: PositionService,
-    private paths: PathService
+    private paths: PathService,
+    private navCtrl: NavController,
   ){
   }
 
@@ -73,9 +77,7 @@ export class GoogleMapComponent {
         reject(err);
       });
     });
-
   }
-
   private loadSDK(): Promise<any> {
     console.info("Loading Google Maps SDK");
     return new Promise((resolve, reject) => {
@@ -119,7 +121,6 @@ export class GoogleMapComponent {
       }
     });
   }
-
   private injectSDK(): Promise<any> {
     return new Promise((resolve, reject) => {
       window['mapInit'] = () => {
@@ -137,36 +138,47 @@ export class GoogleMapComponent {
     });
   }
 
-  private initMap(): Promise<any> {
-
-    return new Promise((resolve, reject) => {
-      this.pos.positionSubject.subscribe((data) => {
-        if (this.map != undefined) {
-          mylocation = this.pos.getPosition();
-          if (!this.positionlock) {
-            this.map.setCenter({lat: mylocation.lat, lng: mylocation.lng});
-            this.positionlock = true;
-          }
-          this.setMe(mylocation.lat, mylocation.lng);
-          if (this.lat !== 0 && this.lng !== 0) {
-            this.startNavigating({lat: mylocation.lat, lng: mylocation.lng}, {lat: this.lat, lng: this.lng});
-          }
-        }
-      });
-      let mylocation = this.pos.getPosition();
-      let latLng = new google.maps.LatLng(mylocation.lat, mylocation.lng);
-      let mapOptions = {
-        center: latLng,
-        zoom: 15
-      };
-      this.map = new google.maps.Map(this.element.nativeElement, mapOptions);
-      resolve(true);
-      this.directionsService = new google.maps.DirectionsService;
-      this.directionsDisplay = new google.maps.DirectionsRenderer;
-      this.setMe(mylocation.lat, mylocation.lng);
+  public retrievePaths() {
+    let center = this.map.getCenter();
+    this.waypts = [];
+    this.paths.getPathsByGeofireSearch(100, [center.lat(), center.lng()], (values) => {
+      this.addMarker(values.key, values.coords[0], values.coords[1], (values.path.name));
     });
+    //this.geo.getLocations(100, [center.lat(), center.lng()], (key, location, distance) => {
+    //this.addMarker(this.getMarkercount(), location[0], location[1], ("Entfernung: " + distance));
+    //this.point.getPoint(key, (res) => {
+    //  this.addMarker(this.getMarkercount(), location[0], location[1], (res.email + ' ' + moment(res.ts).format('YYYY-MM-DD h:mm:ss')));
+    //});
+    //});
   }
 
+  public addMarker(markerid: string, lat: number, lng: number, title: string): void {
+    let latLng = new google.maps.LatLng(lat, lng);
+    if (this.markers[markerid] != undefined) {
+      this.markers[markerid].setPosition(latLng);
+      return;
+    }
+    let marker = new google.maps.Marker({
+      map: this.map,
+      icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+      animation: google.maps.Animation.DROP,
+      position: latLng,
+      //draggable: true,
+      title: title,
+    });
+    this.markers[markerid] = marker;
+    google.maps.event.addListener(this.markers[markerid], 'click', () => {
+      console.info("Click Marker" + markerid);
+      let params = {};
+      params["tabIndex"] = 1;
+      params["item"] = {key: markerid};
+      params["mode"] = "path";
+      this.clickcb.next(params);
+      //this.mode="path";
+      //this.pathparams = {id: markerid};
+      //this.loadPath(markerid);
+    });
+  }
   private loadPath(data) {
     this.paths.getPath(undefined, this.pathparams.id, (values) => {
       console.log(values)
@@ -218,26 +230,36 @@ export class GoogleMapComponent {
     return false;
   };
 
-  public addMarker(markerid: string, lat: number, lng: number, title: string): void {
-    let latLng = new google.maps.LatLng(lat, lng);
-    if (this.markers[markerid] != undefined) {
-      this.markers[markerid].setPosition(latLng);
-      return;
-    }
-    let marker = new google.maps.Marker({
-      map: this.map,
-      icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-      animation: google.maps.Animation.DROP,
-      position: latLng,
-      //draggable: true,
-      title: title,
+  private initMap(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.pos.positionSubject.subscribe((data) => {
+        if (this.map != undefined) {
+          mylocation = this.pos.getPosition();
+          if (!this.positionlock) {
+            this.map.setCenter({lat: mylocation.lat, lng: mylocation.lng});
+            this.positionlock = true;
+          }
+          this.setMe(mylocation.lat, mylocation.lng);
+          if (this.lat !== 0 && this.lng !== 0) {
+            this.startNavigating({lat: mylocation.lat, lng: mylocation.lng}, {lat: this.lat, lng: this.lng});
+          }
+          if (this.mode == "paths") {
+            this.retrievePaths();
+          }
+        }
+      });
+      let mylocation = this.pos.getPosition();
+      let latLng = new google.maps.LatLng(mylocation.lat, mylocation.lng);
+      let mapOptions = {
+        center: latLng,
+        zoom: 15
+      };
+      this.map = new google.maps.Map(this.element.nativeElement, mapOptions);
+      resolve(true);
+      this.directionsService = new google.maps.DirectionsService;
+      this.directionsDisplay = new google.maps.DirectionsRenderer;
+      this.setMe(mylocation.lat, mylocation.lng);
     });
-    this.markers[markerid] = marker;
-    google.maps.event.addListener(this.markers[markerid], 'click', () => {
-      this.lat=this.markers[markerid].getPosition().lat();
-      this.lng=this.markers[markerid].getPosition().lng()
-      this.startNavigating({lat:this.pos.lat,lng:this.pos.lng},{lat:this.lat,lng:this.lng});
-    })
   }
 
   public getMarkercount() {
@@ -258,20 +280,6 @@ export class GoogleMapComponent {
     });
     this.me = marker;
   }
-  public retrievePaths(){
-    let center = this.map.getCenter();
-    this.waypts=[];
-    this.paths.getPathsByGeofireSearch(100,[center.lat(),center.lng()],(values)=>{
-      this.addMarker(values.key,  values.coords[0], values.coords[1], (values.path.name));
-    });
-     //this.geo.getLocations(100, [center.lat(), center.lng()], (key, location, distance) => {
-       //this.addMarker(this.getMarkercount(), location[0], location[1], ("Entfernung: " + distance));
-       //this.point.getPoint(key, (res) => {
-       //  this.addMarker(this.getMarkercount(), location[0], location[1], (res.email + ' ' + moment(res.ts).format('YYYY-MM-DD h:mm:ss')));
-       //});
-     //});
-  }
-
   public setNewMarker() {
     let center = this.map.getCenter();
     this.addMarker(

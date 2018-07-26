@@ -28,26 +28,24 @@ export class ListPage {
               public alertCtrl: AlertController,
               private tabs: Tabs) {
     this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane', 'american-football', 'boat', 'bluetooth', 'build'];
-    this.mode = this.navParams.get("mode") || "paths";
-    if (this.mode === "path") {
-      //Load Single Path
-    } else {
-      //Load all Paths
-    }
     this.ionSelected();
   }
 
   ionSelected() {
-    //this.scrollArea.scrollToTop();
-    //this.refresh();
     this.pos.retPosition();
-    this.pos.positionSubject.subscribe((data) => {
-      if (this.pos.state !== true) {
-        var modes = ["paths", "editpath", "addpath"];
-        if (modes.indexOf(this.mode) > -1)
+    this.mode = this.navParams.get("mode") || "paths";
+    console.log(this.mode);
+    var modepaths = ["paths", "addpath"];
+    var modepath = ["path", "editpath"];
+    if (modepaths.indexOf(this.mode) > -1)
+      this.pos.positionSubject.subscribe((data) => {
+        if (this.pos.state !== true && modepaths.indexOf(this.mode) > -1) {
           this.getPaths(100, [this.pos.lat, this.pos.lng]);
-      }
-    });
+        }
+      });
+    if (modepath.indexOf(this.mode) > -1) {
+      this.getPoints(this.navParams.get("item").key);
+    }
   }
 
   public addPath() {
@@ -71,21 +69,20 @@ export class ListPage {
             );
             console.log(key);
             let params = {
-              tabIndex: 2,
+              tabIndex: 0,
               mode: "addpoint",
               item: {key: key, name: data.title, note: ''}
             }
             //var t: Tabs = this.navCtrl.parent;
             //t.select(0);
-            this.tabs.select(0);
-            this.nav.setRoot("tabs-page", params);
+            //this.tabs.select(0);
+            this.navCtrl.setRoot("tabs-page", params);
           }
         }
       ]
     });
     prompt.present();
   }
-
   public reorderallowed(): boolean {
     if (this.mode == "path") {
       return true;
@@ -93,18 +90,38 @@ export class ListPage {
       return false;
     }
   }
-  getPaths(radius, coords) {
+
+  public getPaths(radius, coords) {
+    //this.items=[];
+    console.log("error");
     this.paths.getPathsByGeofireSearch(radius, coords, (resObj) => {
       if (resObj !== null) {
         if (!this.isListitem(resObj.key)) {
           this.items.push({
             id: resObj.key,
             title: resObj.path.name + ':',
-            note: ('(' + moment().format('YYYY-MM-DD h:mm:ss') + ')'),
+            note: "Keine Notiz",
             icon: 'contract'
           });
         }
       }
+    });
+  }
+
+  public getPoints(key) {
+    this.items = [];
+    this.paths.getPath(undefined, key, (resObj) => {
+      console.log(resObj);
+      resObj.points.forEach((values) => {
+        console.log(values);
+        this.items.push({
+          id: values.key,
+          title: values.name + ':',
+          note: values.note,
+          icon: 'pin'
+        });
+        console.log(this.items);
+      });
     });
   }
 
@@ -121,9 +138,20 @@ export class ListPage {
       if (item) {
         params["tabIndex"] = 0;
         params["item"] = item;
+        params["mode"] = "path";
       }
-      this.tabs.select(0);
       this.navCtrl.setRoot("tabs-page", params);
+      this.tabs.select(0);
+    }
+    if (this.mode == "editpath") {
+      let params = {};
+      if (item) {
+        params["tabIndex"] = 2;
+        params["item"] = item;
+        params["mode"] = "path";
+      }
+      this.navCtrl.setRoot("tabs-page", params);
+      this.tabs.select(0);
     }
   }
 
