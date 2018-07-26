@@ -1,6 +1,7 @@
 export interface UserData {
   uid?: string,
-  name: string,
-  lp: number,
-  lastLoginTs: number,
+  name?: string,
+  email?: string,
+  lp?: number,
+  lastLoginTs?: number,
 }
