@@ -21,9 +21,25 @@ export class ProfilPage {
   private name: string;
   private email: string;
   private lp: number;
+  private badgeArr: Array<Object>;
+
+  items: any = [];
+  itemExpandHeight: number = 100;
 
   constructor(private user: UserDataService,
               private  badge: BadgrService) {
+
+    this.items = [
+      {expanded: false},
+      {expanded: false},
+      {expanded: false},
+      {expanded: false},
+      {expanded: false},
+      {expanded: false},
+      {expanded: false},
+      {expanded: false},
+      {expanded: false}
+    ];
 
     var that = this;
     this.user.getUserObsv((data) => {
@@ -31,6 +47,7 @@ export class ProfilPage {
       that.email = data.email;
       that.lp = data.lp;
     });
+    this.badge.getAllBadgesAndUserForFE(data=>that.badgeArr=data);
   }
 
   reset() {
@@ -45,5 +62,18 @@ export class ProfilPage {
     saveObj.email = this.email;
     this.user.updateUserData(saveObj);
   }
+
+  expandItem(item) {
+
+    this.items.map((listItem) => {
+      if (item == listItem) {
+        listItem.expanded = !listItem.expanded;
+      } else {
+        listItem.expanded = false;
+      }
+      return listItem;
+    });
+  }
+
 }
 

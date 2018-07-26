@@ -21,7 +21,26 @@
       <h1> Profile</h1>
       <img class="profile-image" width="10%" src="assets/icon/profile-icon.png">
       <h4>{{name}}</h4>
+      <button class="readOnly" ng-disable="true" ion-button large>{{lp}} LP</button>
     </div>
+
+    <div class="divider"></div>
+    <h4>Badges</h4>
+    <div class="badge-grid">
+      <ion-card *ngFor="let badge of badgeArr" [class.earned]="badge.earned===true">
+        <a href="{{badge.url}}"><img src="{{badge.image}}"/></a>
+        <ion-card-content>
+          <ion-card-title>
+            {{badge.name}}
+          </ion-card-title>
+          <p>
+            {{badge.description}}
+          </p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+    <div class="divider"></div>
+
     <ion-list>
       <ion-item>
         <ion-label floating>Name</ion-label>
@@ -31,12 +50,7 @@
         <ion-label floating>E-Mail</ion-label>
         <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
       </ion-item>
-      <ion-item>
-        <ion-label floating>Lern Punkte</ion-label>
-        <ion-input type="text" [(ngModel)]="lp" name="lp" disabled="true"></ion-input>
-      </ion-item>
-
     </ion-list>
-    <button color="secondary" [disabled]="!formCtrl.form.valid" ion-button block (click)="save()">Save</button>
+    <button color="secondary" [disabled]="!formCtrl.form.valid" ion-button (click)="save()">Save</button>
   </form>
 </ion-content>

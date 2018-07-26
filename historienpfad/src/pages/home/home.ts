@@ -59,7 +59,7 @@ export class HomePage {
     // this.paths.getPathsByGeofireSearch(100,[50.826160,12.945902],(values)=>{console.log(values)});
     // this.paths.removePointFromPath("-LHF_nSsXjPFlzsWSJT2");
     // this.badge.getUserSelf();
-    // this.badge.getAllBadgesForUser((badges)=>{console.log(badges)});
+    // this.badge.assertBadgeToUser('u5GWPy9ISHmxVL-LNQ7JPw');
   }
 
   public handleMode(hmode) {

@@ -63,7 +63,7 @@ export class UserDataService {
    */
   firstLoginActions(user): Object {
     const rtnObj = {lp: 100};
-    rtnObj['email']=user.email;
+    rtnObj['email'] = user.email;
     if (user.displayName && user.displayName != null && user.displayName != '') {
       rtnObj['name'] = user.displayName;
     } else {
@@ -103,10 +103,16 @@ export class UserDataService {
    * workaround for getUserDataFromDB not triggering on second subscribe
    * @param cb
    */
-  getUserObsv(cb):void{
-    const key= this.getUIDWrapper();
-    const observable = this.db.object<UserData>(`users/${key}`).valueChanges();
-    observable.subscribe(cb);
+  getUserObsv(cb, takeOne = false): Observable<UserData> {
+    const key = this.getUIDWrapper();
+    let observable = this.db.object<UserData>(`users/${key}`).valueChanges();
+    if (takeOne) {
+      observable = this.db.object<UserData>(`users/${key}`).valueChanges().pipe(take(1));
+    }
+    if (cb !== undefined) {
+      observable.subscribe(cb)
+    }
+    return observable;
   }
 
   /*

@@ -1,3 +1,30 @@
 page-profil {
-
+  .divider {
+    border-bottom: 3px solid #dedede;
+    margin: 5px;
+  }
+  .readOnly{
+    cursor: auto;
+  }
+  ion-card {
+    img{
+      height: 200px !important;
+      width: auto !important;
+    }
+    &:not(.earned){
+      opacity: 0.3;
+    }
+    > a{
+      display: inline-block !important;
+    }
+    max-height: none !important;
+    position: relative !important;
+    text-align: center !important;
+    overflow: auto !important;
+    padding-top: 13px !important;
+  }
+  .badge-grid{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
 }
