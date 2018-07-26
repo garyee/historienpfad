@@ -1,10 +1,9 @@
 import {Component, ViewChild} from '@angular/core';
 
-import {AlertController, NavController, NavParams} from 'ionic-angular';
+import {AlertController, Nav, NavController, NavParams, Tabs} from 'ionic-angular';
 import {PointService} from "../../../services/database/point.service";
 import {GeoService} from "../../../services/database/geo.service";
 import {AuthService} from "../../../services/auth.service";
-import {GoogleMapComponent} from "../../components/google-map/google-map";
 import moment from "moment";
 import {PositionService} from "../../../services/position.service";
 import {PathService} from "../../../services/database/path.service";
@@ -18,8 +17,7 @@ export class ListPage {
   items: Array<{ id: string, title: string, note: string, icon: string }> = [];
   mode = "paths";
   pathkey: any;
-  @ViewChild(GoogleMapComponent) mapComponent: GoogleMapComponent;
-
+  @ViewChild(Nav) nav: Nav;
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private geo: GeoService,
@@ -27,7 +25,8 @@ export class ListPage {
               private auth: AuthService,
               private pos: PositionService,
               private paths: PathService,
-              public alertCtrl: AlertController) {
+              public alertCtrl: AlertController,
+              private tabs: Tabs) {
     this.icons = ['flask', 'wifi', 'beer', 'football', 'basketball', 'paper-plane', 'american-football', 'boat', 'bluetooth', 'build'];
     this.mode = this.navParams.get("mode") || "paths";
     if (this.mode === "path") {
@@ -71,15 +70,15 @@ export class ListPage {
               }
             );
             console.log(key);
-            let params = {};
-            params = {
-              tabIndex: 0,
+            let params = {
+              tabIndex: 2,
               mode: "addpoint",
               item: {key: key, name: data.title, note: ''}
             }
-            this.navCtrl.setRoot("tabs-page", params);
-            this.pos.getPosition();
-
+            //var t: Tabs = this.navCtrl.parent;
+            //t.select(0);
+            this.tabs.select(0);
+            this.nav.setRoot("tabs-page", params);
           }
         }
       ]
@@ -120,12 +119,10 @@ export class ListPage {
     if (this.mode == "paths") {
       let params = {};
       if (item) {
-        params = {
-          tabIndex: 0,
-          mode: "path",
-          item: item
-        };
+        params["tabIndex"] = 0;
+        params["item"] = item;
       }
+      this.tabs.select(0);
       this.navCtrl.setRoot("tabs-page", params);
     }
   }
