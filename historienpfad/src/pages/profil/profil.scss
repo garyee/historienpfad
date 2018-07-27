@@ -1,4 +1,5 @@
 page-profil {
+
   .divider {
     border-bottom: 3px solid #dedede;
     margin: 5px;
@@ -23,8 +24,10 @@ page-profil {
     overflow: auto !important;
     padding-top: 13px !important;
   }
-  .badge-grid{
+  .badge-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    @media (min-device-width: 500px) {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
   }
 }
