@@ -91,7 +91,7 @@ export class ListPage {
     let params = {
       tabIndex: 0,
       mode: "path",
-      item: {key: this.navParams.get("item").key}
+      item: this.navParams.get("item")
     }
     this.tabs.select(0);
     this.app.getRootNav().push("tabs-page", params);
@@ -164,6 +164,15 @@ export class ListPage {
         }
         this.navCtrl.setRoot("tabs-page", params);
         this.tabs.select(0);
+        break;
+      case "path":
+        if (item) {
+          params["tabIndex"] = 2;
+          params["item"] = item;
+          params["mode"] = "point";
+        }
+        this.tabs.select(2);
+        this.app.getRootNav().push("tabs-page", params);
         break;
       case "editpath":
         if (this.navParams.get("item") !== undefined) {

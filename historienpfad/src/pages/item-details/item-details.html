@@ -3,14 +3,14 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>Item Details</ion-title>
+    <ion-title>Punkt Details</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
   <h3 text-center *ngIf="selectedItem">
     <ion-icon [name]="selectedItem.icon"></ion-icon>
-    {{selectedItem.title}} - {{selectedItem.name}}
+    {{selectedItem.title}}
   </h3>
   <div *ngIf="(mode=='point')" [innerHTML]="sanitizer.bypassSecurityTrustHtml(htmlContent)"></div>
   <div *ngIf="(mode=='editpoint')">

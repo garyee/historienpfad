@@ -186,7 +186,7 @@ export class GoogleMapComponent {
     this.paths.getPath(undefined, this.pathparams.key, (values) => {
       this.markers = [];
       values.points.forEach((values) => {
-        //this.addMarker(values.key, values.coords[0], values.coords[1], (values.name));
+        this.addMarker(values.key, values.coords[0], values.coords[1], (values.name));
         this.waypts.push({
           location: new google.maps.LatLng(values.coords[0], values.coords[1]),
           stopover: false

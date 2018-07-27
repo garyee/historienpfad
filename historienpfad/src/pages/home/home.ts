@@ -63,7 +63,7 @@ export class HomePage {
   }
 
   public handleMode(hmode) {
-    if (hmode == undefined) {
+    if (hmode == undefined || hmode == "point") {
       this.mode = "paths";
     } else {
       this.mode = hmode;
