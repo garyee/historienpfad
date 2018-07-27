@@ -11,8 +11,8 @@ import {IonicPage, NavController, NavParams} from "ionic-angular";
 })
 export class TabsPage {
   HomePage = HomePage;
-  ItemDetailsPage = ItemDetailsPage;
   ListPage = ListPage;
+  ItemDetailsPage = ItemDetailsPage;
   myIndex: number;
   params: any;
 
@@ -21,7 +21,6 @@ export class TabsPage {
     // Set the active tab based on the passed index from menu.ts
     this.myIndex = navParams.get("tabIndex") || 0;
     this.params = navParams.data;
-
   }
 
   public updateParams(id) {

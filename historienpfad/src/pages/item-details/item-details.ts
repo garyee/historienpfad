@@ -3,6 +3,8 @@ import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {ContentService} from "../../../services/database/content.service";
 import {DomSanitizer} from "@angular/platform-browser";
 import * as $ from "jquery";
+import {PathService} from "../../../services/database/path.service";
+import {PointService} from "../../../services/database/point.service";
 
 @IonicPage()
 @Component({
@@ -20,20 +22,28 @@ export class ItemDetailsPage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private content: ContentService,
-              private sanitizer: DomSanitizer) {
-    this.mode = navParams.get('mode') || "point";
-    this.selectedItem = navParams.get('item');
-    content.getContent(this.selectedItem.key, (content) => {
-      if (content != null) {
-        if (this.mode == "point")
-          this.htmlContent = content.html;
-        else if (this.mode = "editpoint")
-          (<any>$('div#froala')).froalaEditor('html.set', content.html);
-
-      }
-    })
+              private sanitizer: DomSanitizer,
+              private points: PointService) {
+    this.mode = this.navParams.get("mode") || "point";
+    this.selectedItem = this.navParams.get("item");
+    this.ionSelected();
   }
 
+  ionSelected() {
+    this.mode = this.navParams.get("mode") || "point";
+    this.selectedItem = this.navParams.get("item");
+    if (this.selectedItem !== undefined)
+      this.content.getContent(this.selectedItem.key, (content) => {
+        console.log(content);
+        if (content != null) {
+          if (this.mode == "point")
+            this.htmlContent = content.html;
+          else if (this.mode = "editpoint")
+            (<any>$('div#froala')).froalaEditor('html.set', content.html);
+
+        }
+      });
+  }
   public save() {
     const htmlString = (<any>$('div#froala')).froalaEditor('html.get');
     if (htmlString != '' && htmlString != '<p></p>') {

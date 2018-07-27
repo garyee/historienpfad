@@ -65,12 +65,10 @@ export class HomePage {
   public handleMode(hmode) {
     if (hmode == undefined) {
       this.mode = "paths";
-      return;
+    } else {
+      this.mode = hmode;
     }
-    this.mode = hmode;
-    if (this.mode === "paths") {
-      this.mapComponent.retrievePaths();
-    } else if (this.mode === "path") {
+    if (this.mode === "path") {
       this.selectedpath = this.navParams.get('item');
     } else if (this.mode === "addpoint") {
       this.mapclass = "addpoint";

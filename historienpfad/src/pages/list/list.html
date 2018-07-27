@@ -15,7 +15,7 @@
       <div class="item-note" item-right>
         {{item.note}}
       </div>
-      <ion-icon name="create"></ion-icon>
+      <ion-icon name="create" *ngIf="(mode=='editpath')"></ion-icon>
     </button>
   </ion-list>
 </ion-content>
@@ -23,6 +23,10 @@
   <button *ngIf="(mode=='addpath')" ion-button color="light" (click)="addPath()">
     <ion-icon name="ios-add-circle"></ion-icon>
     Pfad hinzufügen
+  </button>
+  <button *ngIf="(mode=='path')" ion-button color="light" (click)="startPath()">
+    <ion-icon name="ios-navigate"></ion-icon>
+    Pfad beginnen
   </button>
 </ion-footer>
 

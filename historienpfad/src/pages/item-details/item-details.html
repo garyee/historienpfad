@@ -9,12 +9,9 @@
 
 <ion-content>
   <h3 text-center *ngIf="selectedItem">
-    {{selectedItem.title}}
     <ion-icon [name]="selectedItem.icon"></ion-icon>
+    {{selectedItem.title}} - {{selectedItem.name}}
   </h3>
-  <h4 text-center *ngIf="selectedItem">
-    You navigated here from <b>{{selectedItem.title}}</b>
-  </h4>
   <div *ngIf="(mode=='point')" [innerHTML]="sanitizer.bypassSecurityTrustHtml(htmlContent)"></div>
   <div *ngIf="(mode=='editpoint')">
     <button (click)="save()">Save</button>

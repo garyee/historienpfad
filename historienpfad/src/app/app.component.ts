@@ -30,6 +30,14 @@ export class MyApp {
       index: 1,
       icon: 'ios-add-circle'
     },
+    {
+      title: 'Pfad bearbeiten',
+      pageName: 'tabs-page',
+      tabComponent: 'ListPage',
+      mode: "editpath",
+      index: 1,
+      icon: 'ios-create'
+    },
     {title: 'Profil', pageName: ProfilPage, icon: 'contact'},
   ];
   constructor(

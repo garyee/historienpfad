@@ -54,7 +54,8 @@ export class GoogleMapComponent {
     this.init().then((res) => {
       if (this.pathparams != undefined) {
         console.log(this.mode);
-        this.loadPath(this.pathparams.id);
+        console.log(this.pathparams.key);
+        this.loadPath(this.pathparams.key);
       } else {
         this.retrievePaths();
       }
@@ -65,17 +66,32 @@ export class GoogleMapComponent {
 
   }
 
-  private init(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.loadSDK().then((res) => {
-        this.initMap().then((res) => {
-          resolve(true);
-        }, (err) => {
-          reject(err);
-        });
-      }, (err) => {
-        reject(err);
-      });
+  public addMarker(markerid: string, lat: number, lng: number, title: string): void {
+    let latLng = new google.maps.LatLng(lat, lng);
+    if (this.markers[markerid] != undefined) {
+      this.markers[markerid].setPosition(latLng);
+      return;
+    }
+    let marker = new google.maps.Marker({
+      map: this.map,
+      icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+      animation: google.maps.Animation.DROP,
+      position: latLng,
+      //draggable: true,
+      title: title,
+    });
+    this.markers[markerid] = marker;
+    google.maps.event.addListener(this.markers[markerid], 'click', () => {
+      console.info("Click Marker" + markerid);
+      let params = {};
+      params["tabIndex"] = 1;
+      params["item"] = {key: markerid};
+      if (this.mode == "paths") {
+        params["mode"] = "path"
+      } else {
+        params["mode"] = this.mode;
+      }
+      this.clickcb.next(params);
     });
   }
   private loadSDK(): Promise<any> {
@@ -137,7 +153,6 @@ export class GoogleMapComponent {
       this.renderer.appendChild(this._document.body, script);
     });
   }
-
   public retrievePaths() {
     let center = this.map.getCenter();
     this.waypts = [];
@@ -152,39 +167,26 @@ export class GoogleMapComponent {
     //});
   }
 
-  public addMarker(markerid: string, lat: number, lng: number, title: string): void {
-    let latLng = new google.maps.LatLng(lat, lng);
-    if (this.markers[markerid] != undefined) {
-      this.markers[markerid].setPosition(latLng);
-      return;
-    }
-    let marker = new google.maps.Marker({
-      map: this.map,
-      icon: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-      animation: google.maps.Animation.DROP,
-      position: latLng,
-      //draggable: true,
-      title: title,
-    });
-    this.markers[markerid] = marker;
-    google.maps.event.addListener(this.markers[markerid], 'click', () => {
-      console.info("Click Marker" + markerid);
-      let params = {};
-      params["tabIndex"] = 1;
-      params["item"] = {key: markerid};
-      params["mode"] = this.mode;
-      this.clickcb.next(params);
-      //this.mode="path";
-      //this.pathparams = {id: markerid};
-      //this.loadPath(markerid);
+  private init(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if (!this.mapsLoaded)
+        this.loadSDK().then((res) => {
+          this.initMap().then((res) => {
+            resolve(true);
+          }, (err) => {
+            reject(err);
+          });
+        }, (err) => {
+          reject(err);
+        });
     });
   }
+
   private loadPath(data) {
-    this.paths.getPath(undefined, this.pathparams.id, (values) => {
-      console.log(values)
+    this.paths.getPath(undefined, this.pathparams.key, (values) => {
       this.markers = [];
       values.points.forEach((values) => {
-        this.addMarker(values.key, values.coords[0], values.coords[1], (values.name));
+        //this.addMarker(values.key, values.coords[0], values.coords[1], (values.name));
         this.waypts.push({
           location: new google.maps.LatLng(values.coords[0], values.coords[1]),
           stopover: false
