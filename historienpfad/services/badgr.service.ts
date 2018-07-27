@@ -84,6 +84,12 @@ export class BadgrService {
     });
   }
 
+  getBadgeByID(badgeID, cb) {
+    this.callBadgr('badgeclasses/' + badgeID, 'get', (res) => {
+      cb(res['result']);
+    });
+  }
+
   /**
    * checks for Badgr Data in DB and updates it if needed
    */

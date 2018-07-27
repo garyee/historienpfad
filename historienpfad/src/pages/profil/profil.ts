@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams} from 'ionic-angular';
+import {AlertController, IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
 import {UserDataService} from "../../../services/database/user-data.service";
 import {BadgrService} from "../../../services/badgr.service";
 import {UserData} from "../../models/database/userdata.model";
@@ -27,7 +27,8 @@ export class ProfilPage {
   itemExpandHeight: number = 100;
 
   constructor(private user: UserDataService,
-              private  badge: BadgrService) {
+              private  badge: BadgrService,
+              public alertCtrl: AlertController) {
 
     this.items = [
       {expanded: false},
@@ -61,6 +62,24 @@ export class ProfilPage {
     saveObj.name = this.name;
     saveObj.email = this.email;
     this.user.updateUserData(saveObj);
+  }
+
+  rewardLP(){
+    this.user.addLPToUser(200);
+  }
+
+  rewardBadge(){
+    var that= this;
+    this.badge.assertBadgeToUser('stBkgfHqQxmUjBlkJO7Tmg',(assertionObj)=>{
+      that.badge.getBadgeByID(assertionObj['result'][0]['badgeclass'],(badgeObj)=>{
+        const prompt = this.alertCtrl.create({
+          title: 'Glückwunsch!',
+          message: "Sie haben den Badge '"+badgeObj[0]['name']+"' erhalten!",
+        });
+        prompt.present();
+      });
+
+    });
   }
 
   expandItem(item) {

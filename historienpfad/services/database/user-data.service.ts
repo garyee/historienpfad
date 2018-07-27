@@ -157,10 +157,10 @@ export class UserDataService {
    */
   addLPToUser(lp2add: number): void {
     var that = this;
-    this.user.pipe(take(1)).subscribe((data) => {
+    this.getUserObsv((data) => {
       if (data && data.lp) {
         that.updateUserData({lp: (data.lp + lp2add)});
       }
-    });
+    },true);
   }
 }
