@@ -5,6 +5,7 @@ import {DomSanitizer} from "@angular/platform-browser";
 import * as $ from "jquery";
 import {PathService} from "../../../services/database/path.service";
 import {PointService} from "../../../services/database/point.service";
+import {encodeUriFragment} from "@angular/router/src/url_tree";
 
 @IonicPage()
 @Component({
@@ -26,6 +27,10 @@ export class ItemDetailsPage {
               private points: PointService) {
     this.mode = this.navParams.get("mode") || "point";
     this.selectedItem = this.navParams.get("item");
+    console.log(this.selectedItem)
+    if (this.selectedItem.name != undefined) {
+      this.selectedItem.title = this.selectedItem.name;
+    }
     this.ionSelected();
   }
 
@@ -33,8 +38,8 @@ export class ItemDetailsPage {
     this.mode = this.navParams.get("mode") || "point";
     this.selectedItem = this.navParams.get("item");
     if (this.selectedItem !== undefined)
-      this.content.getContent(this.selectedItem.key, (content) => {
-        console.log(content);
+      if (this.selectedItem.key !== undefined)
+        this.content.getContent(this.selectedItem.key, (content) => {
         if (content != null) {
           if (this.mode == "point")
             this.htmlContent = content.html;
@@ -46,8 +51,9 @@ export class ItemDetailsPage {
   }
   public save() {
     const htmlString = (<any>$('div#froala')).froalaEditor('html.get');
+    console.log(htmlString);
     if (htmlString != '' && htmlString != '<p></p>') {
-      this.content.updateContent('-LHAZIfMKmon0qQJ9Okp', {html: htmlString + ''});
+      this.content.updateContent(this.selectedItem.key, {html: htmlString + ''});
     }
   };
 

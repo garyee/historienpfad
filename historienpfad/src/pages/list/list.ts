@@ -162,8 +162,8 @@ export class ListPage {
           params["item"] = item;
           params["mode"] = "path";
         }
-        this.navCtrl.setRoot("tabs-page", params);
         this.tabs.select(0);
+        this.app.getRootNav().push("tabs-page", params);
         break;
       case "path":
         if (item) {

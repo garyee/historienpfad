@@ -113,6 +113,7 @@ export class HomePage {
                 mode: "editpath",
                 item: {key: this.selectedpath.key}
               }
+              this.tabs.select(1);
               this.app.getRootNav().push("tabs-page", params);
             }
           },
@@ -128,9 +129,8 @@ export class HomePage {
         ]
       });
       prompt.present();
-      let center = this.mapComponent.map.getCenter();
       this.paths.getPointsListFromPath(this.selectedpath.key, (values) => {
-        this.mapComponent.addMarker(values.key, center.lat(), center.lng(), values.title);
+        this.mapComponent.addMarker(values.key, values.coords[0], values.coords[0], values.title);
       });
 
     }

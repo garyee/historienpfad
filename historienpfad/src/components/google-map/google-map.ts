@@ -53,8 +53,6 @@ export class GoogleMapComponent {
   ngOnInit() {
     this.init().then((res) => {
       if (this.pathparams != undefined) {
-        console.log(this.mode);
-        console.log(this.pathparams.key);
         this.loadPath(this.pathparams.key);
       } else {
         this.retrievePaths();
