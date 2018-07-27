@@ -25,10 +25,7 @@ export class BadgrService {
         changes.map(c => ({key: c.payload.key, ...c.payload.val()}))
       ));
     this.getToken();
-    this.token.subscribe((res) => {/*console.log(res)*/
-    }, (err) => console.error(err));
     this.snycDB();
-    // this.getUserSelf();
   }
 
   getToken() {
@@ -36,32 +33,6 @@ export class BadgrService {
       this.token = this.http.post<TokenResponse>('https://api.badgr.io/api-auth/token', badgrConfig)
         .pipe(map(res => res.token));
     }
-  }
-
-  getUserSelf() {
-    var that = this;
-    that.callBadgr('users/self', 'get', (res) => {
-    });
-    that.callBadgr('issuers', 'get',
-      (res) => {
-        const issuerID = res['result'][0]['entityId'];
-        that.callBadgr('issuers/' + issuerID + '/badgeclasses', 'get',
-          (res) => {
-            // console.log(res);
-            // const data = {
-            //   badgeclass: res['result'][0]['entityId'],
-            //   recipient:
-            //     {
-            //       identity: "Gerald_Meier@gmx.de",
-            //       hashed: false,
-            //       type: "email",
-            //       plaintextIdentity: "Gerald_Meier@gmx.de",
-            //     }
-            // };
-            // that.callBadgr('issuers/' + issuerID + '/assertions', token, 'post',
-            //   (res) => console.log(res), data);
-          });
-      });
   }
 
   /**
@@ -72,7 +43,7 @@ export class BadgrService {
    * @param cb
    * @param {any} data
    */
-  private callBadgr(endpoint: string, method: string, cb, data = undefined) {
+  private callBadgr(endpoint: string, method: string, cb = undefined, data = undefined) {
     this.token.subscribe((token) => {
       switch (method) {
         case 'get':
@@ -94,9 +65,7 @@ export class BadgrService {
                 'Authorization': 'Token ' + token
               }
             }
-          ).subscribe((res) => {
-            console.log(res)
-          });
+          ).subscribe(cb);
           break;
       }
     });
@@ -155,34 +124,97 @@ export class BadgrService {
     });
   }
 
-  assertBadgeToUser() {
-
+  /**
+   *
+   * @param badgeID
+   */
+  assertBadgeToUser(badgeID,cb=undefined) {
+    var that = this;
+    this.getIssuerIDFromDB((issuerID) => {
+      this.user.getUserObsv((userData) => {
+        if (userData != null && userData.email && issuerID != null) {
+          that.getAllBadgesForUser((userAssertions) => {
+            const userBadgesFiltered = userAssertions['result'].map(val => val['badgeclass']);
+            if(userBadgesFiltered.indexOf(badgeID)<0) {
+              const data = {
+                badgeclass: badgeID,
+                recipient:
+                  {
+                    identity: userData.email,
+                    hashed: false,
+                    type: "email",
+                    plaintextIdentity: userData.email,
+                  }
+              };
+              that.callBadgr('issuers/' + issuerID + '/assertions', 'post', cb, data);
+            }
+          });
+        }
+      },true);
+    });
   }
 
-  private getAllBadgesFromIssuer(issuerID, mail, cb) {
-    this.callBadgr('issuers/' + issuerID + '/assertions?recipient=' + mail, 'get', cb);
+  getAllPossibleBadges(cb){
+    var that = this;
+    this.getIssuerIDFromDB((issuerID) => {
+        if ( issuerID != null ) {
+          that.getAllBadgesFromIssuer(issuerID, cb);
+        }
+    });
+  }
+
+  private getAllBadgesFromIssuer(issuerID,cb) {
+    var that = this;
+      this.callBadgr('issuers/' + issuerID + '/badgeclasses', 'get', cb);
+  }
+
+  private getAllAssertionsFromIssuer(issuerID, cb, mail = '') {
+    this.callBadgr('issuers/' + issuerID + '/assertions'+(mail!=''?'?recipient=' + mail:''), 'get', cb);
   }
 
   getAllBadgesForUser(cb) {
     var that = this;
     this.getIssuerIDFromDB((issuerID) => {
-      this.user.getUserDataFromDB((userData) => {
+      this.user.getUserObsv((userData) => {
         if (userData != null && userData.email && issuerID != null) {
-          that.getAllBadgesFromIssuer(issuerID, userData.email, cb);
+          that.getAllAssertionsFromIssuer(issuerID, cb, userData.email);
 
         }
-      });
+      },true);
     });
   }
 
+  getAllBadgesAndUserForFE(cb) {
+    var that=this;
+    this.getAllPossibleBadges((allBadgeClasses) => {
+      that.getAllBadgesForUser((userAssertions) => {
+        const userBadgesFiltered = userAssertions['result'].map(val => val['badgeclass']);
+        const resArr = allBadgeClasses['result'].map(val => {
+          let rtnObj = {};
+          rtnObj['entityId'] = val['entityId'];
+          rtnObj['name'] = val['name'];
+          rtnObj['description'] = val['description'].replace('\\n', '<br/>');
+          rtnObj['image'] = val['image'];
+          rtnObj['url'] = val['openBadgeId'];
+          if (userBadgesFiltered.indexOf(val.entityId) > -1) {
+            rtnObj['earned'] = true;
+          }
+          return rtnObj;
+        });
+        cb(resArr);
+      });
+    });
+  }
   ///////////////////////DB functions
 
   getIssuerIDFromDB(cb): Observable<string> {
-    const observ = this.issuerList.pipe(map((data) => {
+    const observable = this.issuerList.pipe(map((data) => {
       return data[0]['key']
-    }))
-    observ.subscribe(cb);
-    return observ
+    }),take(1))
+    if (cb !== undefined) {
+      observable.subscribe(cb)
+    }
+    return observable;
   }
 
 }
