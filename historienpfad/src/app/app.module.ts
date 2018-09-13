@@ -20,7 +20,6 @@ import {GeoService} from "../../services/database/geo.service";
 import {PointService} from "../../services/database/point.service";
 import {PositionService} from "../../services/position.service";
 import {LoginPage} from "../pages/login/login";
-import {PositionServiceProvider} from '../providers/position-service/position-service';
 import {PathService} from "../../services/database/path.service";
 import {ContentService} from "../../services/database/content.service";
 // Import Froala Editor.
@@ -72,7 +71,6 @@ import {ProfilPage} from "../pages/profil/profil";
     UserDataService,
     AngularFireAuth,
     PositionService,
-    PositionServiceProvider,
     Geolocation,
     PathService,
     ContentService,

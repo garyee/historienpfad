@@ -4,16 +4,16 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import GeoFire from 'geofire';
 import { from } from 'rxjs';
 import {Observable} from "rxjs/Observable";
-import { throttleTime } from 'rxjs/operators';
-import { distinctUntilChanged } from 'rxjs/operators';
 
+/**
+ * this service is a wrapper for the geofire-library
+ * a firebase lib to save geo-coordinates and to easily do a nearby search.
+ */
 @Injectable()
 export class GeoService {
 
   dbRef: any;
   geoFire: any;
-
-  // hits = new BehaviorSubject([])
 
   constructor(private db: AngularFireDatabase) {
     /// Reference database location for GeoFire
@@ -21,6 +21,11 @@ export class GeoService {
     this.geoFire = new GeoFire(this.dbRef.query.ref);
   }
 
+  /**
+   * Retrieve a Point by its key
+   * @param key - the key of the point (has to be specified when saving the point)
+   * @param cb
+   */
   getLocationByKey(key, cb) {
     this.geoFire.get(key).then(cb, function (error) {
       console.error("Error: " + error);
@@ -31,23 +36,33 @@ export class GeoService {
     return from(this.geoFire.get(key));
   }
 
-  /// Adds GeoFire data to database
+  /**
+   *   Adds GeoFire data to database
+   */
   setLocation(key:string, coords: Array<number>) {
     return this.geoFire.set(key, coords)
       .then(() => console.log('location updated'))
       .catch((err) => console.error(err))
   }
 
+  /**
+   * Delete Location from DB
+   * @param key
+   */
   removeLocation(key){
     this.geoFire.remove(key);
   }
 
-  /*
-  will emit an array with the resulting Keys
+  /**
+   * Near-by search
+   * will emit an array with the resulting Keys
+   *
+   * @param {number} radius
+   * @param {Array<number>} coords
+   * @param {any} cb - if != undefined will subscribe on changes of the points retrieved by the query
+   * @returns {Observable<any>}
    */
   getLocations(radius: number, coords: Array<number>, cb=undefined): Observable<any> {
-      // var keys = new Array();
-
       var geoQuery= this.geoFire.query({
         center: coords,
         radius: radius
@@ -59,19 +74,7 @@ export class GeoService {
         observer.next({key:key,coords:location,dist:distance,mode:'add'});
       });
 
-      // geoQuery.on("key_moved", (key, location, distance) =>  {
-      //   var index = keys.indexOf(key);
-      //   if (index > -1) {
-      //     keys[index]=key;
-      //   }
-      //   observer.next(keys);
-      // });
-
       geoQuery.on("key_exited", (key, location, distance) => {
-        // var index = keys.indexOf(key);
-        // if (index > -1) {
-        //   keys.splice(index, 1);
-        // }
         observer.next({key:key,coords:location,dist:distance,mode:'remove'});
       });
     });

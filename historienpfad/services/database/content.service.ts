@@ -1,13 +1,15 @@
 import {Injectable} from "@angular/core";
 import {AngularFireDatabase, AngularFireList} from "angularfire2/database";
-import {Point} from "../../src/models/database/point.model";
-import {Path} from "../../src/models/database/path.model";
 import {map} from "rxjs/operators";
 import {Observable} from "rxjs/Observable";
 import {GeoService} from "./geo.service";
 import {Content} from "../../src/models/database/content.model";
-// import {Point} from "../../src/models/point/point.model";
 
+/**
+ * Service Component which corresponds to the firebase database document 'content'
+ * It holds the html content that the user adds to a point
+ * The Id of a content node is the id of the corresponding point (document points)
+ */
 @Injectable()
 export class ContentService{
 
@@ -24,10 +26,23 @@ export class ContentService{
     );
   }
 
+  /**
+   * Create a pushId without pushing data or contacting the database at all
+   * Use to create pushKey in order to push a new content node to db, if you need to set the pushId before pushing and
+   * not  after like usual
+   * @returns {string | null}
+   */
   getPushKey(){
     return this.db.createPushId();
   }
 
+  /**
+   * Get html content with
+   *
+   * @param key - id of the content which is the same as the id of the point
+   * @param {any} cb - callback if set the callback will subscribe on result
+   * @returns {Observable<Content | null>} - will return an observable
+   */
   getContent(key,cb=undefined){
     if(key!=null) {
       const observable=this.db.object<Content>(`content/${key}`).valueChanges()
@@ -38,21 +53,29 @@ export class ContentService{
     }
   }
 
-  // addContent(key,data){
-  //   this.contentRef.set(key,data);
-  // }
-
+  /**
+   * Add Content object to the content document
+   * @param data - html string
+   * @returns {string | null} -pushKey will be returned
+   */
   pushContent(data){
     return this.contentRef.push({html:data}).key;
   }
 
+  /**
+   * Update content object from content node
+   * @param key - id of the point object (points document)
+   * @param {Content} data - html string
+   */
   updateContent(key,data: Content){
     this.contentRef.update(key, data);
   }
 
+  /**
+   * Delete content object from content node
+   * @param key
+   */
   removeContent(key){
     this.contentRef.remove(key);
   }
-
-
 }

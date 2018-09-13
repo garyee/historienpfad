@@ -6,8 +6,9 @@ import {UserData} from "../../src/models/database/userdata.model";
 import moment from "moment";
 import {AuthService} from "../auth.service";
 
-// import {Point} from "../../src/models/point/point.model";
-
+/**
+ *  This service has methods to handle userdata
+ */
 @Injectable()
 export class UserDataService {
 
@@ -77,7 +78,7 @@ export class UserDataService {
    * If key not given current user is taken
    * when a callback-function is passed as cb this function is subscribed
    *
-   * @param {any} cb
+   * @param {any} cb - if !==undefined, is subscribed on the results of the query
    * @param {any} key
    * @returns {any}
    */
@@ -115,9 +116,11 @@ export class UserDataService {
     return observable;
   }
 
-  /*
-  add and also destructive update
-  If key not given current user is taken
+  /**
+   * Add and also destructive update
+   * If key not given current user is taken
+   * @param {UserData} data
+   * @param {any} key
    */
   addUserData(data: UserData, key = undefined): void {
     key = key || this.getUIDWrapper();
@@ -125,9 +128,11 @@ export class UserDataService {
     this.usersRef.set(key, data);
   }
 
-  /*
-  non-destructive Update
-  If key not given current user is taken
+  /**
+   * non-destructive Update
+   * If key not given current user is taken
+   * @param data
+   * @param {any} key
    */
   updateUserData(data, key = undefined): void {
     key = key || this.getUIDWrapper();
@@ -139,6 +144,8 @@ export class UserDataService {
    * returns observable (of the lps)
    * subscribe by passing callback on cb
    *
+   * @param cb - if !==undefined, is subscribed on the results of the query
+   * @returns {Observable<number>}
    */
   getLPFromUser(cb): Observable<number> {
     const observable = this.user.pipe(map((data) => {
@@ -152,7 +159,6 @@ export class UserDataService {
 
   /**
    * Add lp to the User
-   *
    * @param {number} lp2add
    */
   addLPToUser(lp2add: number): void {

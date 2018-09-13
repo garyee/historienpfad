@@ -2,12 +2,16 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from '@angular/common/http';
 import {badgrConfig} from '../firebase.credentials';
 import {TokenResponse} from "../src/models/responses/token.response.model";
-import {map, mergeMap, filter, take} from 'rxjs/operators';
+import {map, take} from 'rxjs/operators';
 import {Observable} from "rxjs/Observable";
 import {AngularFireDatabase, AngularFireList} from "angularfire2/database";
 import moment from "moment";
 import {UserDataService} from "./database/user-data.service";
 
+/**
+ *  This service implements a client for the badgr.io api
+ *  https://api.badgr.io/docs/v2/
+ */
 @Injectable()
 export class BadgrService {
 
@@ -28,6 +32,9 @@ export class BadgrService {
     this.snycDB();
   }
 
+  /**
+   * Get an access token for secure Api calls
+   */
   getToken() {
     if (badgrConfig) {
       this.token = this.http.post<TokenResponse>('https://api.badgr.io/api-auth/token', badgrConfig)
@@ -36,7 +43,7 @@ export class BadgrService {
   }
 
   /**
-   * internal callwrapper
+   * internal api call wrapper
    *
    * @param {string} endpoint e.g. 'users/self'
    * @param {string} method
@@ -71,6 +78,10 @@ export class BadgrService {
     });
   }
 
+  /**
+   * Get the Issuer (A Badgr Api Entity) It is the Parent-entity to Badges
+   * @param cb
+   */
   getFirstIssuer(cb) {
     this.callBadgr('issuers', 'get',
       (res) => {
@@ -78,12 +89,22 @@ export class BadgrService {
       });
   }
 
+  /**
+   * Get All Badges from an Issuer
+   * @param issuerID
+   * @param cb
+   */
   getBadges(issuerID, cb) {
     this.callBadgr('issuers/' + issuerID + '/badgeclasses', 'get', (res) => {
       cb(res['result']);
     });
   }
 
+  /**
+   * Does just that
+   * @param badgeID
+   * @param cb
+   */
   getBadgeByID(badgeID, cb) {
     this.callBadgr('badgeclasses/' + badgeID, 'get', (res) => {
       cb(res['result']);
@@ -92,6 +113,7 @@ export class BadgrService {
 
   /**
    * checks for Badgr Data in DB and updates it if needed
+   * Cache the Badge & Issuer-Ids to firebase so save time on Api calls
    */
   snycDB() {
     var that = this;
@@ -131,7 +153,7 @@ export class BadgrService {
   }
 
   /**
-   *
+   * Reward a Badge to the current User
    * @param badgeID
    */
   assertBadgeToUser(badgeID,cb=undefined) {
@@ -160,6 +182,10 @@ export class BadgrService {
     });
   }
 
+  /**
+   * Get all Badges from all Issuers -> all Badges available
+   * @param cb
+   */
   getAllPossibleBadges(cb){
     var that = this;
     this.getIssuerIDFromDB((issuerID) => {
@@ -174,10 +200,22 @@ export class BadgrService {
       this.callBadgr('issuers/' + issuerID + '/badgeclasses', 'get', cb);
   }
 
+  /**
+   * Get A List of what badges got rewarded to the user (getting a badge is called assertion)
+   * @param issuerID
+   * @param cb
+   * @param {string} mail
+   */
   private getAllAssertionsFromIssuer(issuerID, cb, mail = '') {
     this.callBadgr('issuers/' + issuerID + '/assertions'+(mail!=''?'?recipient=' + mail:''), 'get', cb);
   }
 
+  /**
+   * Get All Badges the current user has been rewarded (assertions)
+   * The callback will get a List of Assertion-Objects
+   * for further details on the assertion object refer to the Badgr Api Doc (Url in class doc)
+   * @param cb - callback function
+   */
   getAllBadgesForUser(cb) {
     var that = this;
     this.getIssuerIDFromDB((issuerID) => {
@@ -190,6 +228,12 @@ export class BadgrService {
     });
   }
 
+  /**
+   * Get All Badges the current user has been rewarded (assertions)
+   * The callback will get a List of Assertion-Objects enriched with data from other
+   * Badgr Objects necessary for the frontend
+   * @param cb - callback function
+   */
   getAllBadgesAndUserForFE(cb) {
     var that=this;
     this.getAllPossibleBadges((allBadgeClasses) => {
@@ -211,8 +255,12 @@ export class BadgrService {
       });
     });
   }
-  ///////////////////////DB functions
 
+  /**
+   * Gets IssuerID from the firebase DB
+   * @param cb
+   * @returns {Observable<string>}
+   */
   getIssuerIDFromDB(cb): Observable<string> {
     const observable = this.issuerList.pipe(map((data) => {
       return data[0]['key']

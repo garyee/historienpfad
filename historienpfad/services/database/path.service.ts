@@ -6,16 +6,16 @@ import {Point} from "../../src/models/database/point.model";
 import {PointService} from "./point.service";
 import {map, mergeMap, filter, take } from 'rxjs/operators';
 import {of as observableOf} from 'rxjs/observable/of'
-import {merge} from 'rxjs/observable/merge';
 import "rxjs-compat/add/operator/mergeMap";
 import {combineLatest} from "rxjs/observable/combineLatest";
 import {GeoService} from "./geo.service";
-import {EMPTY} from 'rxjs'
 
+/**
+ * This service has methods to handle paths
+ */
 @Injectable()
 export class PathService {
 
-  // private dbRef = this.db.list<Path>('paths');
   pathsRef: AngularFireList<Path>;
   paths: Observable<Path[]>;
 
@@ -30,11 +30,22 @@ export class PathService {
     );
   }
 
+  /**
+   * Create a pushId without pushing data or contacting the database at all
+   * Use to create pushKey in order to push a new content node to db, if you need to set the pushId before pushing and
+   * not  after like usual
+   * @returns {string | null}
+   */
   getPushKey() {
     return this.db.createPushId();
   }
 
-  getPaths(cb) {
+  /**
+   * Get All Paths in DB
+   * @param cb - if !==undefined, is subscribed on the results of the query
+   * @returns {Observable<Path[]>}
+   */
+  getPaths(cb=undefined) {
     var that = this;
     const combinedObv = this.paths.pipe(mergeMap(pathsList => {
       if (pathsList == null) {
@@ -54,11 +65,16 @@ export class PathService {
 
   }
 
-  /*
-  returns an observable of a path in every case but:
-  A. the emitted vlaue can be null if path is not found in DB
-  B. if flat is true the path object will be emitted as it is in the DB (with no further point infos)
-  C. You can subscribe to the observable by passing a callback cb
+  /**
+   * returns an observable of a path in every case but:
+   * A. the emitted value (in subscribe callback) can be null if path is not found in DB
+   * B. if flat is true the path object will be emitted as it is in the DB (with no further point infos)
+   * C. You can subscribe to the observable by passing a callback cb
+   * @param {any} path_key
+   * @param {any} point_key
+   * @param {any} cb
+   * @param {boolean} flat
+   * @returns {any}
    */
   getPath(path_key=undefined,point_key=undefined, cb = undefined, flat=false) {
     if(path_key!=undefined){
@@ -71,6 +87,13 @@ export class PathService {
     return observableOf(null);
   }
 
+  /**
+   * private method to get a path by path key
+   * @param key - pathkey
+   * @param {any} cb - if !=undefined will be subscribed to the query
+   * @param {boolean} flat - just the path-data no point oder further nested data
+   * @returns {any} - observable<Path>
+   */
   private getPathByPathKey(key, cb = undefined, flat=false) {
     var that = this;
     const observable = this.db.object<Path>(`paths/${key}`);
@@ -100,9 +123,12 @@ export class PathService {
     return combinedObv;
   }
 
-  /*
-    returns the point Observable
-    and subscribse to the path.
+  /**
+   * returns the point Observable and subscribse to the path.
+   * @param point_key
+   * @param {any} cb - if !=undefined will be subscribed to the query
+   * @param {boolean} flat  - just the path-data no point oder further nested data
+   * @returns {Observable<{key: *}>}
    */
   private getPathByPointKey(point_key,cb=undefined,flat=false){
     var that=this;
@@ -116,7 +142,11 @@ export class PathService {
     return pathObs;
   }
 
-
+  /**
+   * Removes a Path from the DB AND Points AND all data associated with the point!!
+   * @param key
+   * @param data
+   */
   removePath(key, data) {
     if (data.hasOwnProperty("points") && data.points.length > 0) {
       data.points.forEach((elem) => {
@@ -130,6 +160,11 @@ export class PathService {
     this.pathsRef.remove(key);
   }
 
+  /**
+   * Removes Point from point list in path AND all data associated with the point!!
+   * @param point_key
+   * @param {any} path_key
+   */
   removePointFromPath(point_key,path_key=undefined){
     var that=this;
     this.getPath(path_key,point_key,undefined, true).pipe(take(1)).subscribe(
@@ -145,6 +180,8 @@ export class PathService {
   /**
    * Adds a path to the DB
    * and returns the key
+   * @param path
+   * @returns {string | null}
    */
   addPath(path) {
     let points = undefined;
@@ -174,7 +211,13 @@ export class PathService {
     return pathKey;
   }
 
-  getPointsListFromPath(key, cb) {
+  /**
+   * Get the PointList of a path (not flat)
+   * @param key - pathkey
+   * @param cb  - if !=undefined will be subscribed to the query
+   * @returns {Observable<Point[] | null>}
+   */
+  getPointsListFromPath(key, cb=undefined) {
     var that = this;
     const observable = this.db.object<Point[]>(`paths/${key}/points`).valueChanges();
     const combindedObv = observable.pipe(mergeMap((keyList) => {
@@ -194,10 +237,12 @@ export class PathService {
     return combindedObv;
   }
 
-  /*
-  will a a point to the point-list of the path
-  if the point has no key-property it will get saved to the points db
-  if the point has a key, it will get updated with the parent-properties (isfirst etc.)
+  /**
+   * will add a point to the point-list of a path
+   * if the point has no key-property it will get saved to the points db
+   * if the point has a key, it will get updated with the parent-properties (isfirst etc.)
+   * @param path_key
+   * @param {Point} data
    */
   addPointToPath(path_key, data: Point) {
     var that = this;
@@ -236,9 +281,15 @@ export class PathService {
         }
       }
     );
-
   }
 
+  /**
+   * private method which does add the point_key to the paths pointlist
+   * @param path_key
+   * @param path
+   * @param point_key
+   * @param index
+   */
   private addPointToList(path_key, path, point_key, index) {
     if (index === undefined) {
       if (!path.hasOwnProperty('points') || path.points === null) {
@@ -255,6 +306,13 @@ export class PathService {
 
   }
 
+  /**
+   *
+   * @param path_key
+   * @param point_index
+   * @param cb
+   * @returns {Observable<Point>}
+   */
   getPointFromPath(path_key, point_index, cb) {
     var that = this;
     const observable = this.db.object<Point>(`paths/${path_key}/points/${point_index}`).valueChanges().pipe(
@@ -267,6 +325,11 @@ export class PathService {
     return observable;
   }
 
+  /**
+   * Updates the flat path object
+   * @param {Path} path
+   * @param {any} cb
+   */
   private pathFlatUpdate(path:Path,cb=undefined){
     const tmp1=this.first(path.points);
     if(Array.isArray(path.points) &&
@@ -278,6 +341,12 @@ export class PathService {
     }
   }
 
+  /**
+   * Pop of the first element of an array
+   * @param array
+   * @param {number} n
+   * @returns {any}
+   */
   private first (array, n=1){
     if (array == null)
       return void 0;
@@ -288,6 +357,12 @@ export class PathService {
     return array.slice(0, n);
   };
 
+  /**
+   * Change the Order of points in a path list
+   * @param path_key
+   * @param from
+   * @param to
+   */
   reorderPointsInPath(path_key, from, to) {
     if(from!=to) {
       var that = this;
@@ -307,17 +382,22 @@ export class PathService {
     }
   }
 
-  /*
-  This function will get the firebase results for the query.
-  Attention this function will emit one result at the time!
-  res ={
-    coords: Array [ number, number ]
-    dist: number
-    key: string - point-key
-    mode: "add"/"remove"
-    path: Path - Object
-    point: Point - Object
-    }
+  /**
+   * This function will get the firebase results for the query.
+   * Attention this function will emit one result at the time!
+   * res ={
+   * coords: Array [ number, number ]
+   * dist: number
+   * key: string - point-key
+   * mode: "add"/"remove"
+   * path: Path - Object
+   * point: Point - Object
+   * }
+   *
+   * @param radius
+   * @param coords
+   * @param {any} cb
+   * @returns {Observable<any>}
    */
   getPathsByGeofireSearch(radius, coords, cb = undefined) {
     var that = this;
