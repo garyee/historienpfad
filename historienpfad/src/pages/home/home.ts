@@ -7,6 +7,7 @@ import {PathService} from "../../../services/database/path.service";
 import {AlertController, App, NavController, NavParams, Tabs} from "ionic-angular";
 import {UserDataService} from "../../../services/database/user-data.service";
 import {BadgrService} from "../../../services/badgr.service";
+import {googleMapsApiKey} from '../../../firebase.credentials';
 
 
 @Component({
@@ -18,6 +19,7 @@ export class HomePage {
   private selectedpath: any;
   private selectedpathcount: number = 0;
   private userLP=false;
+  private apiKey=googleMapsApiKey;
   public mapclass: string = 'nopoint';
   @ViewChild(GoogleMapComponent) mapComponent: GoogleMapComponent;
 
