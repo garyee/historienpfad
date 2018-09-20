@@ -32,7 +32,9 @@ export class HomePage {
               public navParams: NavParams,
               public alertCtrl: AlertController,
               private tabs: Tabs) {
+    //reakt to Mode Param
     this.handleMode(navParams.get('mode'));
+    //Retrieve Users LP
     var that=this;
     this.user.getLPFromUser((lp)=>{
       if(lp!==undefined) {
@@ -42,7 +44,7 @@ export class HomePage {
     // const key=paths.addPath({
     //   name:     'neuer Pfad',
     //   points:   []});
-
+    //Possible Funktions
     // this.paths.getPaths((values)=>{console.log(values)});
     // this.paths.getPath('-LGzbRfJa203kpVGyVOs',undefined,(values)=>{console.log(values)});
     // this.paths.reorderPointsInPath('-LGzbRfJa203kpVGyVOs',0,1);
@@ -62,39 +64,59 @@ export class HomePage {
     // this.badge.assertBadgeToUser('u5GWPy9ISHmxVL-LNQ7JPw');
   }
 
+  /**
+   * Function to Reakt to the selected Mode
+   * @param hmode
+   */
   public handleMode(hmode) {
+    //Default mode point
     if (hmode == undefined || hmode == "point") {
       this.mode = "paths";
-    } else {
+    }
+    else {
       this.mode = hmode;
     }
+    //Fetch Data in Pathmode
     if (this.mode === "path") {
       this.selectedpath = this.navParams.get('item');
-    } else if (this.mode === "addpoint") {
+    }
+    //Edit Modus
+    else if (this.mode === "addpoint") {
       this.mapclass = "addpoint";
       this.selectedpath = this.navParams.get('item');
 
     }
   }
-  public testMarker(){
-    this.mapComponent.setNewMarker();
-  }
+
+  /**
+   * Triggered on Selection of Tabs Page
+   */
   ionSelected() {
     //this.scrollArea.scrollToTop();
     //this.refresh();
-    console.log(this.navParams.data);
     this.handleMode(this.navParams.get('mode'));
   }
 
+  /**
+   * Callback Function for Maps Objekt - Click on Marker
+   * @param data
+   */
   public clickCallback(data) {
-    this.tabs.select(1);
+    //this.tabs.select(1);
+    //Navigate to Page in Parameters
     this.app.getRootNav().push("tabs-page", data);
   }
+
+  /**
+   * Callback for Longpress on Map as a New Point
+   */
   public addPoint() {
+    //App has to bee in AddMode
     if (this.mode == "addpoint") {
+      //Generate a Popup to gather Information
       const prompt = this.alertCtrl.create({
         title: 'Name des Punkts',
-        message: "Gibt dem neuen Punkt einen Namen, und eine Kurzbeschreibung",
+        message: "Gibt dem neuen Punkt einen Namen, und eine Kurzbeschreibung:",
         inputs: [
           {name: 'title', placeholder: 'Name'},
           {name: 'note', placeholder: 'Beschreibung'},
@@ -102,35 +124,42 @@ export class HomePage {
         buttons: [
           {
             text: 'Abbrechen', handler: data => {
-              console.warn('Abgebrochen');
+              //Do nothing because Canceled
+              //console.warn('Abgebrochen');
             }
           },
           {
             text: 'Pfad beenden', handler: data => {
-              console.warn('Pfad fertig');
+              //Path officially ended with last point, continue in editmode
+              //console.warn('Pfad fertig');
               let params = {
                 tabIndex: 1,
                 mode: "editpath",
                 item: {key: this.selectedpath.key}
               }
-              this.tabs.select(1);
+              //this.tabs.select(1);
               this.app.getRootNav().push("tabs-page", params);
             }
           },
           {
             text: 'Speichern', handler: data => {
-              console.info('Hinzufügen');
+              //Path officially startet with first point, continue adding
+              //console.info('Hinzufügen');
               let center = this.mapComponent.map.getCenter();
-              console.log(this.selectedpath);
+              //directly add point to path
               this.paths.addPointToPath(this.selectedpath.key,
                 {name: data.title, coords: [center.lat(), center.lng()], content: {html: data.note}});
             }
           }
         ]
       });
+      //show the promt
       prompt.present();
+      //display new created path on map
+      let center = this.mapComponent.map.getCenter();
       this.paths.getPointsListFromPath(this.selectedpath.key, (values) => {
-        this.mapComponent.addMarker(values.key, values.coords[0], values.coords[0], values.title);
+        //display each marker
+        this.mapComponent.addMarker(values.key, center.lat(), center.lng(), values.title);
       });
 
     }

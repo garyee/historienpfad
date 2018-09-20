@@ -25,7 +25,11 @@ export class TabsPage {
 
   public updateParams(id) {
     this.myIndex = id;
-    this.params = this.navParams.data;
+    let params = this.navParams.data;
+    params["tabIndex"] = 2;
+    //params["item"] = item;
+    params["mode"] = "path";
+    this.params = params;
   }
 
   public getSelectedIndex() {
